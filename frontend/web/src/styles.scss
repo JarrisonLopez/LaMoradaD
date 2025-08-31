@@ -1,0 +1,40 @@
+/* ===== 1) SIEMPRE ARRIBA ===== */
+@use '@angular/material' as mat;
+
+/* ===== 2) Tema Material 3 =====
+   Sin funciones m2-*, y sin define-typography-config.
+*/
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$magenta-palette,
+      tertiary: mat.$violet-palette
+    ),
+    typography: (
+      brand-family: 'Roboto, "Helvetica Neue", Arial, sans-serif',
+      /* Puedes añadir más tokens si quieres:
+         plain-family: 'Roboto, "Helvetica Neue", Arial, sans-serif',
+         bold-weight: 700,
+         ... */
+    ),
+    density: 0
+  ));
+}
+
+/* ===== 3) Estilos globales ===== */
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  background: #faf7ff; /* lila suave opcional */
+}
+
+/* Componentes / utilidades */
+mat-card { border-radius: 16px; }
+.mat-mdc-form-field { min-width: 220px; }
+.mdc-button--raised,
+.mdc-button--unelevated { border-radius: 12px !important; }

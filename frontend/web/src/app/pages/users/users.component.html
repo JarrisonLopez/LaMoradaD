@@ -1,0 +1,13 @@
+<h2>Usuarios</h2>
+
+<form (ngSubmit)="add()" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap">
+  <input [(ngModel)]="form.name" name="name" placeholder="Nombre" required />
+  <input [(ngModel)]="form.email" name="email" placeholder="Email" required />
+  <input [(ngModel)]="form.password" name="password" placeholder="Password" type="password" required />
+  <select [(ngModel)]="form.roleId" name="roleId">
+    <option [ngValue]="undefined">Sin rol</option>
+    <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.name }}</option>
+  </select>
+  <button type="submit">Crear</button>
+</form>
+<pre>{{ users | json }}</pre>

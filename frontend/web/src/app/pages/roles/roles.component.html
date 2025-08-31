@@ -1,0 +1,6 @@
+<h2>Roles</h2>
+<form (ngSubmit)="add()" style="display:flex; gap:.5rem; align-items:center">
+  <input [(ngModel)]="name" name="name" placeholder="Nombre del rol" required />
+  <button type="submit">Crear</button>
+</form>
+<pre>{{ roles | json }}</pre>
