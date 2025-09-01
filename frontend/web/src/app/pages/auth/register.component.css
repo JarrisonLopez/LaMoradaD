@@ -1,0 +1,32 @@
+.auth-wrap {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #faf7ff; /* fondo lila suave */
+}
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 32px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.form {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0 12px;
+}
+.btn.full {
+  width: 100%;
+  justify-content: center;
+}
+.small {
+  font-size: 0.95rem;
+  text-align: center;
+}

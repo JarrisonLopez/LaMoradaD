@@ -1,0 +1,90 @@
+/* ===== Header moderno LaMorada ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  border: 1px solid #ece8ff;
+}
+html.lm-dark .header,
+:root:where([style*='--lm-scheme: dark']) .header {
+  background: rgba(22, 22, 34, 0.75);
+  border-color: var(--color-border);
+}
+
+/* Layout interno */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  gap: 16px;
+}
+
+/* Marca (ahora es <a class="brand">) */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+}
+.brand img {
+  display: block;
+}
+html.lm-dark .brand,
+:root:where([style*='--lm-scheme: dark']) .brand {
+  color: var(--color-text);
+}
+
+/* Navegación principal */
+.nav-links {
+  display: flex;
+  gap: 18px;
+  margin-left: 24px;
+}
+.nav-links a {
+  color: #6b61b6;
+  padding: 10px 8px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+.nav-links a.active,
+.nav-links a:hover {
+  color: #3a2ee6;
+  background: #f1eeff;
+}
+html.lm-dark .nav-links a {
+  color: var(--color-text-soft);
+}
+html.lm-dark .nav-links a.active,
+html.lm-dark .nav-links a:hover {
+  color: white;
+  background: var(--color-surface-2);
+}
+
+/* Acciones (login / registro) */
+.auth-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .header-inner {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  .nav-links {
+    order: 3;
+    width: 100%;
+    margin: 8px 0 0;
+  }
+  .auth-links {
+    margin-left: auto;
+  }
+}

@@ -1,28 +1,63 @@
 /* ===== 1) SIEMPRE ARRIBA ===== */
 @use '@angular/material' as mat;
 
-/* ===== 2) Tema Material 3 =====
-   Sin funciones m2-*, y sin define-typography-config.
-*/
+/* ===== 2) Tema Material 3 (M3) ===== */
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$magenta-palette,
-      tertiary: mat.$violet-palette
-    ),
-    typography: (
-      brand-family: 'Roboto, "Helvetica Neue", Arial, sans-serif',
-      /* Puedes añadir más tokens si quieres:
-         plain-family: 'Roboto, "Helvetica Neue", Arial, sans-serif',
-         bold-weight: 700,
-         ... */
-    ),
-    density: 0
-  ));
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$magenta-palette,
+        tertiary: mat.$violet-palette,
+      ),
+      typography: (
+        brand-family: 'Roboto, "Helvetica Neue", Arial, sans-serif',
+      ),
+      density: 0,
+    )
+  );
 }
 
-/* ===== 3) Estilos globales ===== */
-html, body { height: 100%; }
+/* =======================================================================
+   LaMorada – tokens y estilos globales
+   ======================================================================= */
+
+/* Fuente secundaria moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ---------- Tokens ---------- */
+:root {
+  --lm-scheme: light;
+
+  /* Superficies (modo oscuro opcional) */
+  --color-bg: #0f0f15;
+  --color-surface: #161622;
+  --color-surface-2: #1e1e2d;
+
+  /* Marca LaMorada */
+  --color-primary: #7c4dff; /* morado principal */
+  --color-primary-700: #6b3dff; /* hover morado */
+  --color-accent: #2dd4bf; /* acento agua/verde */
+
+  /* Texto y bordes (dark) */
+  --color-text: #eaeaf3;
+  --color-text-soft: #b9b9c9;
+  --color-border: #2a2a3d;
+
+  /* Estados */
+  --color-danger: #ef4444;
+
+  /* Radios/sombras */
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --shadow-1: 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ============== 3) Estilos globales ============== */
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
@@ -30,11 +65,276 @@ body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-  background: #faf7ff; /* lila suave opcional */
+
+  /* Fondo lila suave */
+  background: #faf7ff;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans', sans-serif;
 }
 
-/* Componentes / utilidades */
-mat-card { border-radius: 16px; }
-.mat-mdc-form-field { min-width: 220px; }
+/* ============== 4) (Opcional) Modo oscuro ============== */
+/*
+html.lm-dark body,
+body:where([data-theme="dark"]),
+:root:where([style*="--lm-scheme: dark"]) body {
+  color-scheme: dark;
+  background: linear-gradient(180deg, #0b0b11 0%, var(--color-bg) 100%);
+  color: var(--color-text);
+}
+*/
+
+/* ===================== 5) Utilidades y componentes ===================== */
+
+/* Contenedor */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Tarjetas */
+.card {
+  background: #fff;
+  border: 1px solid #ece8ff;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 6px 18px rgba(47, 29, 127, 0.08);
+}
+html.lm-dark .card,
+:root:where([style*='--lm-scheme: dark']) .card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-1);
+}
+
+/* Botones utilitarios */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  background: var(--color-primary-700);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border-color: #dcd6ff;
+  color: #4a3bb2;
+}
+.btn-outline:hover {
+  border-color: var(--color-primary);
+  color: #3a2ee6;
+}
+
+/* Inputs base */
+.input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e7e2ff;
+  color: #2b235a;
+  padding: 12px 14px;
+  border-radius: 12px;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--color-primary);
+}
+html.lm-dark .input,
+:root:where([style*='--lm-scheme: dark']) .input {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+/* Tablas base (no-Material) */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 14px;
+  border-bottom: 1px solid #eee7ff;
+}
+.table th {
+  text-align: left;
+  color: #6c5fc9;
+  font-weight: 600;
+}
+html.lm-dark .table th,
+html.lm-dark .table td,
+:root:where([style*='--lm-scheme: dark']) .table th,
+:root:where([style*='--lm-scheme: dark']) .table td {
+  border-bottom-color: var(--color-border);
+}
+html.lm-dark .table th,
+:root:where([style*='--lm-scheme: dark']) .table th {
+  color: #b9b9c9;
+}
+
+/* Chips/Badges */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(124, 77, 255, 0.12);
+  color: #5d3aff;
+  border: 1px solid rgba(124, 77, 255, 0.3);
+}
+html.lm-dark .badge,
+:root:where([style*='--lm-scheme: dark']) .badge {
+  background: rgba(124, 77, 255, 0.15);
+  color: #d9ccff;
+  border-color: rgba(124, 77, 255, 0.35);
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover {
+  opacity: 0.9;
+}
+
+/* Helpers */
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+section {
+  padding: 48px 0;
+}
+.muted {
+  color: #6d6a86;
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1000px) {
+  .grid3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ajustes Material mínimos */
+mat-card {
+  border-radius: 16px;
+}
+.mat-mdc-form-field {
+  min-width: 220px;
+  width: 100%;
+}
 .mdc-button--raised,
-.mdc-button--unelevated { border-radius: 12px !important; }
+.mdc-button--unelevated {
+  border-radius: 12px !important;
+}
+/* Asegurar morado en botones primary Material */
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary {
+  background: var(--color-primary);
+}
+
+/* =======================================================================
+   HERO (Dashboard) – centrado + logo a la derecha
+   ======================================================================= */
+
+/* Superficie a todo el ancho con el degradado */
+.hero-surface {
+  width: 100%;
+  padding: 24px 0;
+  background: radial-gradient(900px 400px at 10% -10%, rgba(124, 77, 255, 0.18), transparent 60%),
+    radial-gradient(700px 400px at 90% -20%, rgba(45, 212, 191, 0.12), transparent 60%),
+    linear-gradient(135deg, #faf7ff, #ede9fe);
+}
+
+/* Layout del hero */
+.hero-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap; /* responsive */
+}
+
+/* Card de texto */
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto; /* centrado robusto */
+  margin-right: auto; /* centrado robusto */
+  padding: 40px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(47, 29, 127, 0.08);
+}
+.hero-card h2 {
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.hero-card p {
+  margin-bottom: 20px;
+  color: #6b6b6b;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Recuadro para el logo (lado derecho) */
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* SIN fondo ni sombras: deja ver <img> real */
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  max-width: 420px;
+  min-height: 0;
+}
+
+/* Imagen del logo */
+.hero-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  /* Si lo quieres en “tarjetica” blanca, descomenta:
+  background: #fff;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+  */
+}
+
+/* Blindaje si el hero vive dentro de un grid */
+.hero-surface,
+.hero-container,
+.hero-card {
+  grid-column: 1 / -1;
+  justify-self: center;
+}

@@ -1,0 +1,56 @@
+.footer {
+  background: #faf7ff; /* lila claro coherente con el resto */
+  padding: 40px 20px;
+  border-top: 1px solid #ece8ff;
+  margin-top: 40px;
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.socials {
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.socials img {
+  transition: transform 0.2s ease;
+}
+.socials img:hover {
+  transform: scale(1.2);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.links a {
+  color: #6b61b6;
+  text-decoration: none;
+}
+.links a:hover {
+  color: var(--color-primary);
+}
+
+.small {
+  font-size: 14px;
+  color: #6d6a86;
+}

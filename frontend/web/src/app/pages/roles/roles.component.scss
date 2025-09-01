@@ -1,0 +1,79 @@
+.roles-page {
+  .title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 8px 0 18px;
+    color: #3a2ee6; /* morado de la paleta */
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 20px;
+  }
+
+  .form-card,
+  .list-card {
+    padding: 18px 18px 22px;
+  }
+
+  .form {
+    display: grid;
+    gap: 12px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .table-toolbar {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .table-wrap {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid #ece8ff;
+    background: #fff;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead th {
+      text-align: left;
+      font-weight: 600;
+      padding: 12px 14px;
+      color: #6c5fc9;
+      border-bottom: 1px solid #eee7ff;
+    }
+
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1eeff;
+      vertical-align: middle;
+    }
+
+    .index {
+      width: 64px;
+      color: #8b86c9;
+    }
+
+    .actions-cell {
+      text-align: right;
+      width: 220px;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

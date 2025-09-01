@@ -1,13 +1,125 @@
-<h2>Usuarios</h2>
+<div class="users-page">
+  <h1 class="title">Usuarios</h1>
 
-<form (ngSubmit)="add()" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap">
-  <input [(ngModel)]="form.name" name="name" placeholder="Nombre" required />
-  <input [(ngModel)]="form.email" name="email" placeholder="Email" required />
-  <input [(ngModel)]="form.password" name="password" placeholder="Password" type="password" required />
-  <select [(ngModel)]="form.roleId" name="roleId">
-    <option [ngValue]="undefined">Sin rol</option>
-    <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.name }}</option>
-  </select>
-  <button type="submit">Crear</button>
-</form>
-<pre>{{ users | json }}</pre>
+  <div class="grid">
+    <!-- ===== Columna izquierda: Crear usuario ===== -->
+    <section class="card form-card">
+      <h3>Crear usuario</h3>
+      <p class="muted">Completa los datos y asigna un rol.</p>
+
+      <form class="form" (ngSubmit)="add()">
+        <input
+          class="input full"
+          type="text"
+          placeholder="Nombre*"
+          [(ngModel)]="form.name"
+          name="name"
+          required
+        />
+
+        <input
+          class="input full"
+          type="email"
+          placeholder="Email*"
+          [(ngModel)]="form.email"
+          name="email"
+          required
+        />
+
+        <input
+          class="input full"
+          type="password"
+          placeholder="Contraseña*"
+          [(ngModel)]="form.password"
+          name="password"
+          required
+        />
+
+        <select class="input full" [(ngModel)]="form.roleId" name="roleId" required>
+          <option [ngValue]="undefined" disabled hidden>Rol</option>
+          <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.name }}</option>
+        </select>
+
+        <div class="actions">
+          <button class="btn" type="submit">
+            <span class="material-icons" style="font-size: 16px; vertical-align: -3px">
+              group_add
+            </span>
+            &nbsp;Crear
+          </button>
+
+          <button
+            class="btn-outline"
+            type="button"
+            (click)="form = { name: '', email: '', password: '', roleId: undefined }"
+          >
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== Columna derecha: Listado ===== -->
+    <section class="card list-card">
+      <h3>Listado</h3>
+      <p class="muted">Gestiona usuarios del sistema.</p>
+
+      <div class="table-toolbar">
+        <input
+          class="input filter"
+          type="text"
+          placeholder="Buscar por nombre, email o rol…"
+          [(ngModel)]="query"
+          name="query"
+        />
+      </div>
+
+      <div class="table-wrap" [class.loading]="loading">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th class="actions-cell">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let u of filteredUsers; trackBy: trackById">
+              <td>
+                <div class="avatar">{{ u.name?.[0]?.toUpperCase() }}</div>
+              </td>
+              <td>
+                <div class="name">
+                  <div class="title">{{ u.name }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="muted">{{ u.email }}</span>
+              </td>
+              <td>
+                <span class="badge">{{ u.role?.name || '—' }}</span>
+              </td>
+              <td class="actions-cell">
+                <button class="btn-outline" type="button" title="Eliminar" disabled>
+                  <span class="material-icons" style="font-size: 18px; vertical-align: -4px">
+                    delete
+                  </span>
+                  &nbsp;Eliminar
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredUsers.length === 0">
+              <td colspan="5" class="muted" style="text-align: center; padding: 18px">
+                No hay resultados para “{{ query }}”.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

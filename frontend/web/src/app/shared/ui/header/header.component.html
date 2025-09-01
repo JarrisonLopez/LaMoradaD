@@ -1,0 +1,28 @@
+<header class="header card">
+  <div class="container header-inner">
+    <!-- Brand / Inicio -->
+    <a class="brand" routerLink="/" aria-label="Ir al inicio">
+      <img src="assets/logo-lamorada.png" alt="LaMorada" height="32" />
+      <strong>LaMorada</strong>
+    </a>
+
+    <!-- Navegación -->
+    <nav class="nav-links" role="navigation" aria-label="Principal">
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Dashboard</a
+      >
+      <a routerLink="/users" routerLinkActive="active">Usuarios</a>
+      <a routerLink="/roles" routerLinkActive="active">Roles</a>
+      <a routerLink="/appointments" routerLinkActive="active">Citas</a>
+    </nav>
+
+    <!-- Acciones -->
+    <div class="auth-links">
+      <a routerLink="/login" class="btn btn-outline">Ingresar</a>
+      <a routerLink="/register" class="btn">Crear cuenta</a>
+    </div>
+  </div>
+</header>

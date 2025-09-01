@@ -1,0 +1,50 @@
+<section class="auth-wrap">
+  <div class="card auth-card">
+    <!-- Marca -->
+    <div class="brand" style="justify-content: center; margin-bottom: 12px">
+      <img src="assets/logo-lamorada.png" alt="LaMorada" height="40" />
+      <strong>LaMorada</strong>
+    </div>
+
+    <h2 style="text-align: center">Crear cuenta</h2>
+    <p class="muted" style="text-align: center">Únete y comienza a agendar con profesionales.</p>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="form" class="form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" placeholder="Tu nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="tu@correo.com" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="mínimo 6 caracteres"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hide = !hide"
+          aria-label="Mostrar contraseña"
+        >
+          <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button class="btn full" type="submit">Registrarme</button>
+    </form>
+
+    <p class="muted small" style="text-align: center">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Ingresar</a>
+    </p>
+  </div>
+</section>

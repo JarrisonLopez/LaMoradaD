@@ -1,0 +1,30 @@
+.hero-card {
+  display: flex;
+  flex-direction: column; /* para apilar título, texto, botones */
+  align-items: center; /* centrado horizontal */
+  justify-content: center; /* centrado vertical */
+  text-align: center; /* texto centrado */
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #faf7ff, #ede9fe);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  max-width: 700px; /* ancho máximo del recuadro */
+  margin: 0 auto; /* centrado del card en la página */
+}
+
+.hero-card h2 {
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.hero-card p {
+  margin-bottom: 20px;
+  color: #6b6b6b;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

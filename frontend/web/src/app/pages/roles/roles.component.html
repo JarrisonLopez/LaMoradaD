@@ -1,6 +1,83 @@
-<h2>Roles</h2>
-<form (ngSubmit)="add()" style="display:flex; gap:.5rem; align-items:center">
-  <input [(ngModel)]="name" name="name" placeholder="Nombre del rol" required />
-  <button type="submit">Crear</button>
-</form>
-<pre>{{ roles | json }}</pre>
+<div class="roles-page">
+  <h1 class="title">Roles</h1>
+
+  <div class="grid">
+    <!-- ===== Columna izquierda: Crear rol ===== -->
+    <section class="card form-card">
+      <h3>Crear rol</h3>
+      <p class="muted">Define un nuevo rol para asignarlo a los usuarios.</p>
+
+      <form class="form" (ngSubmit)="create()">
+        <input
+          class="input full"
+          type="text"
+          placeholder="Nombre del rol*"
+          [(ngModel)]="form.name"
+          name="name"
+          required
+        />
+
+        <div class="actions">
+          <button class="btn" type="submit">
+            <span class="material-icons" style="font-size: 16px; vertical-align: -3px">add</span>
+            &nbsp;Crear
+          </button>
+
+          <button class="btn-outline" type="button" (click)="form = { name: '' }">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== Columna derecha: Listado de roles ===== -->
+    <section class="card list-card">
+      <h3>Listado</h3>
+      <p class="muted">Gestiona los roles disponibles en el sistema.</p>
+
+      <div class="table-toolbar">
+        <input
+          class="input filter"
+          type="text"
+          placeholder="Buscar rol…"
+          [(ngModel)]="query"
+          name="query"
+        />
+      </div>
+
+      <div class="table-wrap" [class.loading]="loading">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th class="actions-cell">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let r of filteredRoles; trackBy: trackById">
+              <td class="index">#{{ r.id }}</td>
+              <td>
+                <span class="badge">{{ r.name }}</span>
+              </td>
+              <td class="actions-cell">
+                <!-- Conéctalo cuando exista endpoint -->
+                <button class="btn-outline" type="button" title="Eliminar" disabled>
+                  <span class="material-icons" style="font-size: 18px; vertical-align: -4px"
+                    >delete</span
+                  >
+                  &nbsp;Eliminar
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredRoles.length === 0">
+              <td colspan="3" class="muted" style="text-align: center; padding: 18px">
+                No hay resultados para “{{ query }}”.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
