@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 import { AuthService } from '../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -46,12 +47,14 @@ export class RegisterComponent {
       return;
     }
     const { name, email, password } = this.form.value;
+
     try {
-      await this.auth.register({ name: name!, email: email!, password: password! });
+      // Registro real contra el backend (/api/users/register)
+      await firstValueFrom(this.auth.register({ name: name!, email: email!, password: password! }));
       this.snack.open('Cuenta creada, ahora inicia sesión', 'Ok', { duration: 2000 });
       this.router.navigateByUrl('/login');
-    } catch {
-      // el interceptor de error se encarga
+    } catch (e: any) {
+      this.snack.open(e?.message || 'No se pudo registrar', 'Cerrar', { duration: 3000 });
     }
   }
 }

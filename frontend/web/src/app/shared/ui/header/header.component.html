@@ -1,28 +1,26 @@
-<header class="header card">
-  <div class="container header-inner">
-    <!-- Brand / Inicio -->
-    <a class="brand" routerLink="/" aria-label="Ir al inicio">
-      <img src="assets/logo-lamorada.png" alt="LaMorada" height="32" />
-      <strong>LaMorada</strong>
-    </a>
+<mat-toolbar color="primary">
+  <a routerLink="/" class="brand" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px;">
+    <mat-icon>home</mat-icon>
+    <span>LaMorada</span>
+  </a>
 
-    <!-- Navegación -->
-    <nav class="nav-links" role="navigation" aria-label="Principal">
-      <a
-        routerLink="/dashboard"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Dashboard</a
-      >
-      <a routerLink="/users" routerLinkActive="active">Usuarios</a>
-      <a routerLink="/roles" routerLinkActive="active">Roles</a>
-      <a routerLink="/appointments" routerLinkActive="active">Citas</a>
-    </nav>
+  <span class="spacer"></span>
 
-    <!-- Acciones -->
-    <div class="auth-links">
-      <a routerLink="/login" class="btn btn-outline">Ingresar</a>
-      <a routerLink="/register" class="btn">Crear cuenta</a>
-    </div>
-  </div>
-</header>
+  <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+  <a mat-button routerLink="/users" routerLinkActive="active">Usuarios</a>
+  <a mat-button routerLink="/roles" routerLinkActive="active">Roles</a>
+  <a mat-button routerLink="/appointments" routerLinkActive="active">Citas</a>
+  <a mat-button routerLink="/availability" routerLinkActive="active">Disponibilidad</a>
+  <a mat-button routerLink="/ebooks" routerLinkActive="active">Ebooks</a>
+
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="user() as u; else guest">
+    <span style="margin-right:12px;">{{ u.name }} · {{ roleLabel(u.role) }}</span>
+    <button mat-stroked-button (click)="logout()">Salir</button>
+  </ng-container>
+
+  <ng-template #guest>
+    <a mat-stroked-button color="accent" routerLink="/login">Ingresar</a>
+  </ng-template>
+</mat-toolbar>

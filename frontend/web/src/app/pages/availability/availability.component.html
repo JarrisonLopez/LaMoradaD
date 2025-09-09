@@ -1,0 +1,117 @@
+<h1 style="margin: 24px 0 8px;">Disponibilidad</h1>
+
+<!-- Crear disponibilidad -->
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; max-width: 980px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Desde</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerStart"
+        placeholder="dd/mm/aaaa"
+        formControlName="fromDate"
+        (dateChange)="onFromDateChange($event.value)"
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+      <mat-datepicker #pickerStart></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hasta</mat-label>
+      <input
+        matInput
+        [min]="minEndDate"
+        [matDatepicker]="pickerEnd"
+        placeholder="dd/mm/aaaa"
+        formControlName="toDate"
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+      <mat-datepicker #pickerEnd></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hora desde</mat-label>
+      <mat-select formControlName="fromTime">
+        <mat-option *ngFor="let t of times" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hora hasta</mat-label>
+      <mat-select formControlName="toTime">
+        <mat-option *ngFor="let t of times" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <button mat-raised-button color="primary" type="submit">Agregar</button>
+  </div>
+</form>
+
+<hr style="margin: 24px 0;">
+
+<!-- Mis disponibilidades -->
+<h2>Mis disponibilidades activas</h2>
+<table class="table" *ngIf="myAvail?.length; else emptyAvail">
+  <thead>
+    <tr>
+      <th>Desde</th>
+      <th>Hasta</th>
+      <th style="width: 140px;">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let a of myAvail">
+      <td>{{ a.from | date: 'short' }}</td>
+      <td>{{ a.to   | date: 'short' }}</td>
+      <td>
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="onDelete(a.id)"
+          [disabled]="deletingIds.has(a.id)"
+        >
+          {{ deletingIds.has(a.id) ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ng-template #emptyAvail>
+  <p>No tienes disponibilidades cargadas todavía.</p>
+</ng-template>
+
+<hr style="margin: 24px 0;">
+
+<!-- Ver slots de un día (Reactive Forms, sin ngModel) -->
+<h2>Ver slots del día</h2>
+<div style="display:flex; gap:12px; align-items:center;">
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha</mat-label>
+    <input
+      matInput
+      [matDatepicker]="pickerSlots"
+      placeholder="dd/mm/aaaa"
+      [formControl]="selectedDateCtrl"
+    />
+    <mat-datepicker-toggle matSuffix [for]="pickerSlots"></mat-datepicker-toggle>
+    <mat-datepicker #pickerSlots></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="loadSlotsForSelectedDay()">Ver slots</button>
+</div>
+
+<div *ngIf="slots" style="margin-top: 12px;">
+  <p><strong>{{ slots.date }}</strong> — Intervalo: {{ slots.interval }} min</p>
+  <div style="display:flex; flex-wrap: wrap; gap:8px;">
+    <span *ngFor="let s of slots.slots"
+          [style]="
+            'padding:6px 10px;border-radius:8px;border:1px solid ' +
+            (s.available ? '#4caf50' : '#f44336') +
+            ';opacity:' + (s.available ? '1' : '.45')
+          ">
+      {{ s.start }}–{{ s.end }}
+    </span>
+  </div>
+</div>

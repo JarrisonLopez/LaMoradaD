@@ -1,0 +1,79 @@
+<h1 style="margin: 24px 0 8px;">Citas</h1>
+
+<div style="display:grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr; gap:16px; max-width: 1200px;">
+  <!-- Paciente -->
+  <mat-form-field appearance="outline">
+    <mat-label>Paciente</mat-label>
+    <mat-select [formControl]="form.controls['userId']">
+      <mat-option *ngFor="let u of patients" [value]="u.id">{{ u.name }} (ID {{u.id}})</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Profesional fijo (psicólogo logueado) -->
+  <mat-form-field appearance="outline">
+    <mat-label>Profesional</mat-label>
+    <input matInput [value]="(auth.user()?.name || ('ID ' + auth.user()?.id)) + ' (Tú)'" disabled>
+  </mat-form-field>
+
+  <!-- Fecha filtrada por tu disponibilidad -->
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha**</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      placeholder="dd/mm/aaaa"
+      [formControl]="form.controls['date']"
+      [matDatepickerFilter]="dateFilter"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Hora inicio (desde slots disponibles) -->
+  <mat-form-field appearance="outline">
+    <mat-label>Hora inicio**</mat-label>
+    <mat-select [formControl]="form.controls['start']" [disabled]="!hoursStart.length">
+      <mat-option *ngFor="let t of hoursStart" [value]="t">{{ t }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Hora fin (desde slots disponibles) -->
+  <mat-form-field appearance="outline">
+    <mat-label>Hora fin**</mat-label>
+    <mat-select [formControl]="form.controls['end']" [disabled]="!hoursEnd.length">
+      <mat-option *ngFor="let t of hoursEnd" [value]="t">{{ t }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div style="margin-top: 16px;">
+  <button mat-raised-button color="primary" (click)="create()">Crear cita</button>
+</div>
+
+<hr style="margin: 24px 0;">
+
+<table class="table" *ngIf="rows?.length; else empty">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Paciente</th>
+      <th>Profesional</th>
+      <th>Inicio</th>
+      <th>Fin</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of rows; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ r.user?.name || ('ID ' + r.user?.id) }}</td>
+      <td>{{ r.professional?.name || ('ID ' + r.professional?.id) }}</td>
+      <td>{{ r.startsAt | date:'short' }}</td>
+      <td>{{ r.endsAt   | date:'short' }}</td>
+      <td>{{ r.status }}</td>
+    </tr>
+  </tbody>
+</table>
+<ng-template #empty>
+  <p>Selecciona una fecha para ver tu agenda o aún no tienes citas ese día.</p>
+</ng-template>

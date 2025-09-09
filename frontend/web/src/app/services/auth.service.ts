@@ -1,50 +1,143 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, map } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+
+export type UserRole = 'admin' | 'psicologo' | 'usuario';
+
+export interface AuthUser {
+  id: number;
+  name?: string;   // opcional para evitar "undefined"
+  email?: string;  // opcional para fallback visual
+  role: UserRole;
+  token: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private base = '/api';
-  user = signal<{ id:number; name:string; email:string; role?: any } | null>(null);
-  token = signal<string | null>(localStorage.getItem('token'));
+  private _user = signal<AuthUser | null>(this.loadFromStorage());
 
-  /** Registro (usa tu endpoint existente) */
-  register(body: {name:string; email:string; password:string; roleId?:number}) {
-    return this.http.post(`${this.base}/users`, body);
+  user = computed(() => this._user());
+  isLoggedIn = computed(() => !!this._user());
+
+  private loadFromStorage(): AuthUser | null {
+    try {
+      const raw = localStorage.getItem('lm_user');
+      return raw ? (JSON.parse(raw) as AuthUser) : null;
+    } catch { return null; }
+  }
+  private persist(u: AuthUser | null) {
+    if (u) localStorage.setItem('lm_user', JSON.stringify(u));
+    else localStorage.removeItem('lm_user');
   }
 
-  /** DEMO LOGIN (temporal sin backend):
-   * Busca el usuario por email en /users y “valida” la password en cliente.
-   * En producción: reemplazar por POST /api/auth/login.
-   */
+  // ---------- helpers de extracción ----------
+  private extractRawRole(input: any): string {
+    if (!input) return '';
+    if (typeof input === 'string' || typeof input === 'number') return String(input);
+    if (Array.isArray(input)) return this.extractRawRole(input[0]);
+
+    // candidatos comunes
+    const candidates = [
+      'role', 'rol', 'name', 'roleName', 'title', 'value', 'slug', 'code', 'key',
+      'tipo', 'tipoRol', 'role_id', 'roleId',
+    ];
+    for (const c of candidates) {
+      if (input[c] != null) return String(input[c]);
+    }
+    // si viene en user.role
+    if (input.user?.role != null) return this.extractRawRole(input.user.role);
+    return '';
+  }
+
+  private normalizeRole(input: any): UserRole {
+    let s = this.extractRawRole(input);
+
+    // si es ID numérico
+    if (/^\d+$/.test(s)) {
+      if (s === '1') return 'admin';
+      if (s === '2') return 'psicologo';
+      return 'usuario';
+    }
+
+    s = String(s).trim().toLowerCase();
+    // quitar tildes
+    s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // compactar espacios
+    s = s.replace(/\s+/g, ' ');
+
+    if (['admin', 'administrator', 'administrador'].includes(s)) return 'admin';
+    if ([
+      'psicologo', 'psicologa', 'psychologist', 'terapeuta', 'terapista',
+      'profesional', 'psicologo profesional'
+    ].includes(s)) return 'psicologo';
+    // por defecto
+    return 'usuario';
+  }
+
+  private extractId(res: any): number {
+    return Number(
+      res?.sub ??
+      res?.id ??
+      res?.user?.id ??
+      res?.payload?.sub ??
+      res?.data?.id ??
+      0
+    ) || 0;
+  }
+
+  private extractName(res: any): string | undefined {
+    const name =
+      res?.name ??
+      res?.user?.name ??
+      res?.fullName ??
+      res?.fullname ??
+      res?.nombre ??
+      (res?.firstName && res?.lastName ? `${res.firstName} ${res.lastName}` : undefined) ??
+      res?.user?.fullName ??
+      res?.user?.nombre;
+    return name ? String(name) : undefined;
+  }
+
+  private extractEmail(res: any): string | undefined {
+    const email =
+      res?.email ??
+      res?.user?.email ??
+      res?.correo ??
+      res?.mail ??
+      res?.user?.correo;
+    return email ? String(email) : undefined;
+  }
+
+  // ---------- API ----------
   login(email: string, password: string) {
-    return this.http.get<any[]>(`${this.base}/users`).pipe(
-      map(users => users.find(u => u.email === email)),
-      tap(u => {
-        if (!u) throw new Error('Usuario no existe');
-        // ⚠️ temporal: si tu backend guarda password plano y lo envía (no debería), podrías comparar aquí
-        // if (u.password !== password) throw new Error('Credenciales inválidas');
-        // demo: aceptar cualquier password para avanzar:
-        const fakeToken = 'demo-token';
-        this.token.set(fakeToken);
-        localStorage.setItem('token', fakeToken);
-        this.user.set(u);
+    return this.http.post<any>('/api/auth/login', { email, password }).pipe(
+      map((res) => {
+        // Token puede venir con distintos nombres
+        const token: string =
+          res?.access_token ?? res?.token ?? res?.accessToken ?? '';
+
+        const user: AuthUser = {
+          id: this.extractId(res),
+          name: this.extractName(res),
+          email: this.extractEmail(res) ?? email, // fallback al email que enviaste
+          role: this.normalizeRole(res?.role ?? res?.user?.role ?? res?.roleId ?? res?.user?.roleId),
+          token,
+        };
+        return user;
+      }),
+      tap((user) => {
+        this._user.set(user);
+        this.persist(user);
+        // console.debug('[Auth] user stored:', user); // descomenta si quieres ver qué quedó
       })
     );
   }
 
-  /** Producción: usar /api/auth/me */
-  me() {
-    // cuando tengas endpoint real, pide /api/auth/me y setea this.user
-    return this.user();
+  register(dto: { name: string; email: string; password: string; role?: UserRole }) {
+    return this.http.post('/api/users/register', dto);
   }
 
-  logout() {
-    this.user.set(null);
-    this.token.set(null);
-    localStorage.removeItem('token');
-  }
-
-  isLoggedIn() { return !!this.token(); }
+  logout() { this._user.set(null); this.persist(null); }
+  get token(): string { return this._user()?.token ?? ''; }
 }

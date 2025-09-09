@@ -1,0 +1,54 @@
+<h2>Mis ebooks</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Título</mat-label>
+    <input matInput formControlName="title" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Descripción (opcional)</mat-label>
+    <input matInput formControlName="description">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Precio (opcional)</mat-label>
+    <input matInput formControlName="price" type="number" min="0">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>URL del archivo (opcional)</mat-label>
+    <input matInput formControlName="fileUrl" placeholder="https://...">
+  </mat-form-field>
+
+  <!-- NUEVO: archivo local -->
+  <div style="margin: 8px 0;">
+    <input type="file"
+           (change)="onFileChange($event)"
+           accept=".pdf,.epub,.mobi,application/pdf,application/epub+zip,application/x-mobipocket-ebook">
+    <div *ngIf="selectedFile" style="font-size: 12px; opacity: .8;">
+      Archivo seleccionado: {{ selectedFile.name }}
+    </div>
+  </div>
+
+  <button mat-raised-button color="primary" [disabled]="loading">Guardar</button>
+</form>
+
+<table class="table" *ngIf="rows?.length">
+  <thead>
+    <tr><th>ID</th><th>Título</th><th>Precio</th><th>Archivo</th></tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let e of rows">
+      <td>{{ e.id }}</td>
+      <td>{{ e.title }}</td>
+      <td>{{ e.price ?? '-' }}</td>
+      <td>
+        <a *ngIf="e.fileUrl" [href]="e.fileUrl" target="_blank" rel="noopener">Abrir</a>
+        <span *ngIf="!e.fileUrl">-</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p *ngIf="!rows?.length">Aún no tienes ebooks.</p>

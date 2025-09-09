@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
-import { AuthService } from '../../services/auth.service';
+import { AuthService, AuthUser, UserRole } from '../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -33,6 +34,7 @@ export class LoginComponent {
   private snack = inject(MatSnackBar);
 
   hide = true;
+  loading = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -40,17 +42,40 @@ export class LoginComponent {
   });
 
   async onSubmit() {
+    if (this.loading) return;
     if (this.form.invalid) {
       this.snack.open('Completa los campos correctamente', 'Cerrar', { duration: 2500 });
       return;
     }
+
     const { email, password } = this.form.value;
+    this.loading = true;
+
     try {
-      await this.auth.login(email!, password!); // tu interceptor de error ya muestra toasts si falla
-      this.snack.open('¡Bienvenido!', 'Ok', { duration: 1800 });
-      this.router.navigateByUrl('/dashboard'); // o /users si prefieres
-    } catch {
-      // el interceptor de error se encarga; dejamos snack opcional si quieres
+      // Login: normaliza y persiste el usuario dentro de AuthService
+      await firstValueFrom(this.auth.login(email!, password!));
+
+      const user: AuthUser | null = this.auth.user();
+      if (!user) throw new Error('No se pudo obtener el usuario');
+
+      // Mostrar nombre si existe; si no, fallback a email o "Usuario"
+      const displayName = user.name || user.email || 'Usuario';
+      this.snack.open(`¡Bienvenido ${displayName}!`, 'Ok', { duration: 1800 });
+
+      // Redirección por rol (ya normalizado: 'admin' | 'psicologo' | 'usuario')
+      const role = user.role as UserRole;
+      if (role === 'admin') {
+        this.router.navigateByUrl('/users');
+      } else if (role === 'psicologo') {
+        this.router.navigateByUrl('/appointments');
+      } else {
+        this.router.navigateByUrl('/appointments');
+      }
+    } catch (err: any) {
+      const message = err?.error?.message || err?.message || 'No se pudo iniciar sesión';
+      this.snack.open(message, 'Cerrar', { duration: 3000 });
+    } finally {
+      this.loading = false;
     }
   }
 }

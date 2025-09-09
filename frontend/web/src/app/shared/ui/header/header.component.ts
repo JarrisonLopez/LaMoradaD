@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
-
-/* Angular Material (opcional pero recomendado para accesibilidad/teclas) */
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../../services/auth.service';
+
+type UserRole = 'admin' | 'psicologo' | 'usuario';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,23 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
-  // Si luego integras Auth real, puedes leer el estado aquí para mostrar/ocultar botones
-  isLoggedIn = false;
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  user = computed(() => this.auth.user());
+  isLoggedIn = computed(() => this.auth.isLoggedIn());
+
+  roleLabel(role?: string): string {
+    switch (role) {
+      case 'admin': return 'Admin';
+      case 'psicologo': return 'Psicólogo';
+      case 'usuario': return 'Usuario';
+      default: return '';
+    }
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigateByUrl('/');
+  }
 }

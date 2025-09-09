@@ -1,0 +1,3 @@
+form { max-width: 420px; }
+.table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.table th, .table td { padding: 8px 12px; border-bottom: 1px solid #eee; }

@@ -2,10 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { AvailabilityModule } from './availability/availability.module';
+import { EbooksModule } from './ebooks/ebooks.module';
+import { AuthModule } from './auth/auth.module';
+
 
 @Module({
   imports: [
@@ -23,10 +26,13 @@ import { AvailabilityModule } from './availability/availability.module';
         synchronize: true, // ⚠️ solo DEV
       }),
     }),
+    // Orden recomendado: primero roles, luego users
     RolesModule,
     UsersModule,
-    AppointmentsModule,
     AvailabilityModule,
+    AppointmentsModule,
+    EbooksModule,   // ← agrega el módulo de ebooks aquí
+    AuthModule,
   ],
 })
 export class AppModule {}

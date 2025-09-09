@@ -1,40 +1,72 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
+import { Role } from '../entities/role.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private users: Repository<User>,
-    @InjectRepository(Role) private roles: Repository<Role>,
+    @InjectRepository(User) private readonly repo: Repository<User>,
+    @InjectRepository(Role) private readonly roles: Repository<Role>,
   ) {}
 
   async create(dto: CreateUserDto) {
-    const exists = await this.users.findOne({ where: { email: dto.email } });
-    if (exists) throw new BadRequestException('Email ya registrado');
+    const role = dto.roleId
+      ? await this.roles.findOne({ where: { id: dto.roleId } })
+      : await this.roles.findOne({ where: { name: 'usuario' } });
+    const u = this.repo.create({ ...dto, role });
+    return this.repo.save(u);
+  }
 
-    const u = this.users.create({
-      name: dto.name,
-      email: dto.email,
-      password: await bcrypt.hash(dto.password, 10),
-    });
-
-    if (dto.roleId) {
-      const role = await this.roles.findOne({ where: { id: dto.roleId } });
-      if (!role) throw new BadRequestException('Rol no existe');
-      u.role = role;
-    }
-    const saved = await this.users.save(u);
-    // no devolver password
-    delete (saved as any).password;
-    return saved;
+  async createAsUsuario(dto: CreateUserDto) {
+    const role = await this.roles.findOne({ where: { name: 'usuario' } });
+    const u = this.repo.create({ ...dto, role });
+    return this.repo.save(u);
   }
 
   findAll() {
-    return this.users.find();
+    return this.repo.find({ relations: { role: true }, order: { id: 'DESC' } });
+  }
+
+  async findOne(id: number) {
+    const u = await this.repo.findOne({ where: { id }, relations: { role: true } });
+    if (!u) throw new NotFoundException('Usuario no encontrado');
+    return u;
+  }
+
+  async update(id: number, dto: UpdateUserDto) {
+    const u = await this.findOne(id);
+    if (dto.roleId) {
+      u.role = await this.roles.findOne({ where: { id: dto.roleId } });
+    }
+    Object.assign(u, { ...dto, roleId: undefined });
+    return this.repo.save(u);
+  }
+
+  async remove(id: number) {
+    const u = await this.findOne(id);
+    return this.repo.remove(u);
+  }
+
+  async findByRole(roleName: 'admin'|'psicologo'|'usuario') {
+    return this.repo.find({
+      where: { role: { name: roleName } },
+      relations: { role: true },
+      order: { id: 'DESC' },
+    });
+  }
+
+  async findPatientsLite() {
+    const rows = await this.findByRole('usuario');
+    return rows.map(r => ({ id: r.id, name: (r as any).name, email: (r as any).email }));
+  }
+
+  /** NUEVO: lista lite de psicólogos */
+  async findProfessionalsLite() {
+    const rows = await this.findByRole('psicologo');
+    return rows.map(r => ({ id: r.id, name: (r as any).name, email: (r as any).email }));
   }
 }
