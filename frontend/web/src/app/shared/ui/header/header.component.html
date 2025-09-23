@@ -12,6 +12,31 @@
   <a mat-button routerLink="/appointments" routerLinkActive="active">Citas</a>
   <a mat-button routerLink="/availability" routerLinkActive="active">Disponibilidad</a>
   <a mat-button routerLink="/ebooks" routerLinkActive="active">Ebooks</a>
+  <a routerLink="/tienda" routerLinkActive="active">Tienda</a>
+
+  <!-- 👇 Acceso público al listado de profesionales -->
+  <a mat-button routerLink="/professionals" routerLinkActive="active">Profesionales</a>
+
+  <!-- 👇 Acceso público a podcasts -->
+  <a mat-button routerLink="/podcasts" routerLinkActive="active">Podcasts</a>
+
+  <!-- 👇 Acceso público al blog -->
+  <a mat-button routerLink="/blog" routerLinkActive="active">Blog</a>
+
+  <ng-container *ngIf="user()?.role === 'psicologo'">
+    <a mat-button routerLink="/metrics-lite" routerLinkActive="active">Métricas</a>
+  </ng-container>
+
+  <!-- Links para crear: solo psicólogo o admin -->
+  <ng-container *ngIf="user()?.role === 'psicologo' || user()?.role === 'admin'">
+    <a mat-stroked-button color="accent" routerLink="/podcasts/new" style="margin-left:8px">
+      Publicar episodio
+    </a>
+    <a mat-stroked-button color="accent" routerLink="/blog/new" style="margin-left:8px">
+      Nueva publicación
+    </a>
+  </ng-container>
+
 
   <span class="spacer"></span>
 

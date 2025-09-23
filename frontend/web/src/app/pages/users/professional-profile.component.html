@@ -1,0 +1,98 @@
+<section class="wrap">
+  <a mat-button color="primary" routerLink="/professionals" class="back">
+    <mat-icon>arrow_back</mat-icon> Volver
+  </a>
+
+  <div class="center" *ngIf="loading()">
+    <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+  </div>
+
+  <!-- Si no hay perfil y no es el dueño => se muestra aviso -->
+  <div class="alert" *ngIf="!loading() && error() && !editMode()">{{ error() }}</div>
+
+  <mat-card class="profile" *ngIf="!loading() && (editMode() || data())">
+    <div class="header">
+      <img
+        [ngSrc]="form.controls.photoUrl.value || data()?.photoUrl || '/assets/avatar.png'"
+        width="128" height="128" class="avatar" alt="Foto del profesional" />
+
+      <div>
+        <h2 class="title">{{ name() || data()?.user?.email || 'Mi perfil profesional' }}</h2>
+        <p class="subtitle">
+          <mat-icon inline>badge</mat-icon>
+          {{ form.controls.specialty.value || data()?.specialty || 'Especialidad no definida' }}
+        </p>
+        <mat-chip-set>
+          <mat-chip disabled>
+            <mat-icon inline>work</mat-icon>
+            {{ form.controls.experienceYears.value || data()?.experienceYears || 0 }} años de experiencia
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <!-- Botón editar solo si es dueño y no está editando -->
+      <div class="actions-right" *ngIf="canEdit() && !editMode()">
+        <button mat-raised-button color="primary" (click)="enableEdit()">
+          <mat-icon>edit</mat-icon> Editar perfil
+        </button>
+      </div>
+    </div>
+
+    <!-- Vista lectura (cuando sí hay data y no estamos editando) -->
+    <div class="body" *ngIf="!editMode() && data()">
+      <h3>Servicios</h3>
+      <div class="chips" *ngIf="servicesArray().length; else noServices">
+        <mat-chip *ngFor="let s of servicesArray()">{{ s }}</mat-chip>
+      </div>
+      <ng-template #noServices><p class="muted">Sin servicios listados.</p></ng-template>
+
+      <h3>Sobre mí</h3>
+      <p class="bio">{{ data()?.bio || 'Sin biografía.' }}</p>
+    </div>
+
+    <!-- Form edición (también aparece si no existía perfil, para CREAR) -->
+    <form class="body form" *ngIf="editMode()" [formGroup]="form" (ngSubmit)="save()">
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Especialidad</mat-label>
+          <input matInput formControlName="specialty" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Años de experiencia</mat-label>
+          <input matInput type="number" min="0" formControlName="experienceYears" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-span-2">
+          <mat-label>Servicios (CSV o JSON)</mat-label>
+          <input matInput formControlName="services" placeholder="Terapia individual, Talleres, ..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-span-2">
+          <mat-label>Biografía</mat-label>
+          <textarea matInput rows="5" formControlName="bio"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-span-2">
+          <mat-label>URL de foto</mat-label>
+          <input matInput formControlName="photoUrl" placeholder="/uploads/photos/mi-foto.jpg" />
+        </mat-form-field>
+      </div>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="cancelEdit()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+          <mat-icon *ngIf="!saving()">save</mat-icon>
+          <mat-progress-spinner *ngIf="saving()" diameter="18" mode="indeterminate"></mat-progress-spinner>
+          <span style="margin-left:6px" *ngIf="!saving()">Guardar</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- CTA solo en lectura -->
+    <div class="actions" *ngIf="!editMode() && data()">
+      <a mat-raised-button color="primary" [routerLink]="['/appointments']">Reservar cita</a>
+      <a mat-stroked-button color="primary" [routerLink]="['/ebooks']">Ver e-books</a>
+    </div>
+  </mat-card>
+</section>

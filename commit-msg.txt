@@ -1,0 +1,16 @@
+﻿feat: snapshot funcional Jarrison (agenda, disponibilidad, políticas y UI)
+
+Backend:
+- Autenticación JWT con JwtAuthGuard y RolesGuard (roles: admin, psicologo, usuario).
+- Users: /api/users/register, perfil /api/users/me, lista de pacientes /api/users/patients, CRUD admin.
+- Availability: crear (UTC), listar propias (/mine) y por profesional (últimas primero); slots de 15m con cruce de citas; DELETE /api/availability/:id.
+- Appointments: creación validando solapes; listados con relaciones (user, professional) para mostrar nombres; cancelar/reprogramar con políticas (admin, dueño, profesional); normalización de actor (sub/id/role).
+
+Frontend (Angular 17 + Material):
+- Citas: psicólogo elige paciente; usuario elige profesional. Datepicker filtrado por disponibilidad; horas desde slots y fin encadenado; botón habilitado sólo con selección válida; tabla con nombres y cancelar.
+- Disponibilidad: alta en ISO local→UTC y listado de propias; consulta de slots por fecha.
+- Interceptor Bearer, DatePipe y header con rol/nombre.
+
+Notas:
+- Fechas en UTC en backend; en front se combinan local→ISO para evitar desfases.
+- Arquitectura y endpoints respetados según LaMorada.

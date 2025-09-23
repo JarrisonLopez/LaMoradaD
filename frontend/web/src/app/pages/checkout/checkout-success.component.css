@@ -1,0 +1,5 @@
+.center {
+  display: grid;
+  gap: 12px;
+  place-items: center;
+}

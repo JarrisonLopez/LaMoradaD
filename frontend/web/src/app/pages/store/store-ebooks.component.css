@@ -1,0 +1,29 @@
+.title { margin: 8px 0 16px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card__title { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+.card__desc { margin: 0 0 12px; color: #4b5563; font-size: 13px; }
+.card__price { font-weight: 700; margin-bottom: 12px; }
+.card__btn { align-self: flex-start; }
+
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(255,255,255,0.6);
+  display: grid; place-items: center;
+  z-index: 1000;
+}

@@ -14,9 +14,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../common/auth/roles.guard';
-import { Roles as AllowRoles } from '../common/auth/roles.decorator'; // decorador STRING
+import { Roles as AllowRoles } from '../common/auth/roles.decorator';
 import { Roles } from '../common/auth/roles.enum';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // <<< usa JWT real
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateProfessionalProfileDto } from './dto/update-professional-profile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -30,7 +31,7 @@ export class UsersController {
     return this.service.createAsUsuario(clean);
   }
 
-  /** Perfil del usuario autenticado (usa JWT y devuelve name desde BD) */
+  /** Perfil del usuario autenticado */
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async me(@Req() req: any) {
@@ -43,7 +44,7 @@ export class UsersController {
     };
   }
 
-  /** Lista "lite" de pacientes para psicólogo/admin (usa JWT + RolesGuard) */
+  /** Lista "lite" de pacientes */
   @Get('patients')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowRoles('psicologo', 'admin')
@@ -51,7 +52,7 @@ export class UsersController {
     return this.service.findPatientsLite();
   }
 
-  /** Lista "lite" de PROFESIONALES para usuario/admin (para agendar con un psicólogo) */
+  /** Lista "lite" de profesionales */
   @Get('professionals')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowRoles('usuario', 'admin')
@@ -59,7 +60,26 @@ export class UsersController {
     return this.service.findProfessionalsLite();
   }
 
-  /** ===================== ADMIN (puedes dejar tus guards actuales) ===================== */
+  /** HU-34: Lista completa de profesionales (pública) */
+  @Get('professionals/full')
+  async listProfessionals() {
+    return this.service.listProfessionals();
+  }
+
+  /** HU-34: Perfil completo de un profesional (público) */
+  @Get('professionals/:id/profile')
+  async getProfessionalProfile(@Param('id') id: string) {
+    return this.service.getProfessionalProfile(id);
+  }
+
+  /** Profesional autenticado: crear/editar su propio perfil */
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/profile')
+  async updateMyProfile(@Req() req: any, @Body() dto: UpdateProfessionalProfileDto) {
+    return this.service.updateMyProfessionalProfile(req.user.sub, dto);
+  }
+
+  /** ===================== ADMIN ===================== */
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @AllowRoles('admin')

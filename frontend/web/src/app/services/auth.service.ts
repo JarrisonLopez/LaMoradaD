@@ -20,18 +20,25 @@ export class AuthService {
   user = computed(() => this._user());
   isLoggedIn = computed(() => !!this._user());
 
+  // ========================
+  // Storage helpers
+  // ========================
   private loadFromStorage(): AuthUser | null {
     try {
       const raw = localStorage.getItem('lm_user');
       return raw ? (JSON.parse(raw) as AuthUser) : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   }
   private persist(u: AuthUser | null) {
     if (u) localStorage.setItem('lm_user', JSON.stringify(u));
     else localStorage.removeItem('lm_user');
   }
 
-  // ---------- helpers de extracción ----------
+  // ========================
+  // Extract helpers
+  // ========================
   private extractRawRole(input: any): string {
     if (!input) return '';
     if (typeof input === 'string' || typeof input === 'number') return String(input);
@@ -71,6 +78,7 @@ export class AuthService {
       'psicologo', 'psicologa', 'psychologist', 'terapeuta', 'terapista',
       'profesional', 'psicologo profesional'
     ].includes(s)) return 'psicologo';
+
     // por defecto
     return 'usuario';
   }
@@ -109,7 +117,9 @@ export class AuthService {
     return email ? String(email) : undefined;
   }
 
-  // ---------- API ----------
+  // ========================
+  // API
+  // ========================
   login(email: string, password: string) {
     return this.http.post<any>('/api/auth/login', { email, password }).pipe(
       map((res) => {
@@ -138,6 +148,12 @@ export class AuthService {
     return this.http.post('/api/users/register', dto);
   }
 
-  logout() { this._user.set(null); this.persist(null); }
-  get token(): string { return this._user()?.token ?? ''; }
+  logout() {
+    this._user.set(null);
+    this.persist(null);
+  }
+
+  get token(): string {
+    return this._user()?.token ?? '';
+  }
 }

@@ -1,0 +1,22 @@
+<!-- src/app/pages/metrics-lite/metrics-lite.component.html -->
+<section class="grid gap-4">
+  <div *ngIf="loading()">Cargando…</div>
+  <div *ngIf="error()">{{ error() }}</div>
+
+  <div *ngIf="data()" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="p-4 rounded-xl shadow">
+      <h3>Visitas</h3>
+      <div class="text-3xl font-bold">{{ data()!.visits }}</div>
+    </div>
+
+    <div class="p-4 rounded-xl shadow">
+      <h3>Reservas confirmadas</h3>
+      <div class="text-3xl font-bold">{{ data()!.reservations }}</div>
+    </div>
+
+    <div class="p-4 rounded-xl shadow">
+      <h3>Productos vendidos</h3>
+      <div class="text-3xl font-bold">{{ data()!.sales }}</div>
+    </div>
+  </div>
+</section>

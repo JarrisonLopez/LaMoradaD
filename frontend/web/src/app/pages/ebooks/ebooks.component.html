@@ -36,16 +36,31 @@
 
 <table class="table" *ngIf="rows?.length">
   <thead>
-    <tr><th>ID</th><th>Título</th><th>Precio</th><th>Archivo</th></tr>
+    <tr>
+      <th>ID</th>
+      <th>Título</th>
+      <th>Precio</th>
+      <th>Archivo</th>
+      <th>Acciones</th>
+    </tr>
   </thead>
   <tbody>
     <tr *ngFor="let e of rows">
       <td>{{ e.id }}</td>
       <td>{{ e.title }}</td>
-      <td>{{ e.price ?? '-' }}</td>
+
+      <!-- 👇 PRECIO EN PESOS COLOMBIANOS (sin decimales) -->
+      <td>{{ e.price != null ? (e.price | currency:'COP':'symbol-narrow':'1.0-0') : '-' }}</td>
+
       <td>
         <a *ngIf="e.fileUrl" [href]="e.fileUrl" target="_blank" rel="noopener">Abrir</a>
         <span *ngIf="!e.fileUrl">-</span>
+      </td>
+
+      <td>
+        <button mat-stroked-button color="primary" (click)="buy(e)" [disabled]="!e.price || e.price <= 0">
+          Comprar
+        </button>
       </td>
     </tr>
   </tbody>

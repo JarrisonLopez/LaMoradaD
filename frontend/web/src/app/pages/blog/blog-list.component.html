@@ -1,0 +1,28 @@
+<div class="container">
+  <h2>Blog</h2>
+
+  <form [formGroup]="form" class="filters" (ngSubmit)="load()">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput formControlName="q" placeholder="Título..."/>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Categoría</mat-label>
+      <input matInput formControlName="category" placeholder="Ej: terapia"/>
+    </mat-form-field>
+    <button mat-stroked-button type="submit">Filtrar</button>
+    <a mat-raised-button color="primary" routerLink="/blog/new" class="right">Nuevo</a>
+  </form>
+
+  <div class="grid">
+    <mat-card *ngFor="let p of items()">
+      <img *ngIf="p.coverUrl" [src]="p.coverUrl" alt="cover" />
+      <mat-card-title>{{ p.title }}</mat-card-title>
+      <mat-card-subtitle>{{ p.category }} · {{ p.createdAt | date:'mediumDate' }}</mat-card-subtitle>
+      <div class="actions">
+        <a mat-button color="primary" [routerLink]="['/blog/slug', p.slug]">Leer</a>
+        <a mat-button color="accent" [routerLink]="['/blog', p.id, 'edit']">Editar</a>
+      </div>
+    </mat-card>
+  </div>
+</div>

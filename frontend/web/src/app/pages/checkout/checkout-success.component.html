@@ -1,0 +1,19 @@
+<h2>¡Gracias por tu compra!</h2>
+
+<div *ngIf="loading(); else ready" class="center">
+  <p>Confirmando el pago…</p>
+  <mat-spinner diameter="44"></mat-spinner>
+  <p style="opacity:.7;">Esto puede tardar unos segundos mientras llega el webhook de Stripe.</p>
+</div>
+
+<ng-template #ready>
+  <div *ngIf="downloadUrl; else pending">
+    <a mat-stroked-button color="primary" [href]="downloadUrl">Descargar e-book</a>
+    <a mat-button routerLink="/tienda">Volver a la tienda</a>
+  </div>
+</ng-template>
+
+<ng-template #pending>
+  <p>No encontramos el enlace todavía. Actualiza esta página en unos segundos si ya realizaste el pago.</p>
+  <a mat-button routerLink="/tienda">Volver a la tienda</a>
+</ng-template>

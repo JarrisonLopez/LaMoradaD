@@ -1,0 +1,31 @@
+<h2 class="title">Tienda de e-books</h2>
+
+<div class="grid" *ngIf="visibleRows()?.length; else empty">
+  <div class="card" *ngFor="let e of visibleRows()">
+    <div class="card__body">
+      <h3 class="card__title">{{ e.title }}</h3>
+      <p class="card__desc" *ngIf="e.description">{{ e.description }}</p>
+      <div class="card__price">
+        {{ e.price | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </div>
+    </div>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      class="card__btn"
+      (click)="buy(e)"
+      [disabled]="loading()"
+    >
+      Comprar
+    </button>
+  </div>
+</div>
+
+<ng-template #empty>
+  <p>No hay e-books disponibles.</p>
+</ng-template>
+
+<div class="overlay" *ngIf="loading()">
+  <mat-spinner diameter="44"></mat-spinner>
+</div>

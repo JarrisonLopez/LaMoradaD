@@ -10,6 +10,23 @@ export type UserLite = {
   role?: string | { id?: number; name?: string }; // por compatibilidad
 };
 
+export type ProfessionalProfile = {
+  id: string; // id del perfil (tabla professional_profiles)
+  user: UserLite & { lastName?: string };
+  specialty: string;
+  experienceYears: number;
+  services?: string;   // CSV o JSON (según backend)
+  bio?: string;
+  photoUrl?: string;   // /uploads/photos/...
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type NotAvailableProfile = {
+  error: string;
+  message: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private base = '/api';
@@ -26,23 +43,52 @@ export class UsersService {
   }
 
   // ======================
-  // NUEVOS HELPERS (opcional)
+  // NUEVOS MÉTODOS — HU-34
   // ======================
 
   /**
-   * Lista con filtro por rol si el backend soporta ?role=
-   * (Si tu endpoint aún no implementa ese query param, usa listByRoleClientSide()).
+   * Listado de profesionales (completo) para la vista pública.
+   * Backend: GET /api/users/professionals/full
    */
+  getProfessionals(): Observable<UserLite[]> {
+    return this.http.get<UserLite[]>(`${this.base}/users/professionals/full`);
+  }
+
+  /**
+   * Perfil de un profesional (público).
+   * Backend: GET /api/users/professionals/:id/profile
+   * Devuelve ProfessionalProfile o un objeto { error, message } si no existe.
+   */
+  getProfessionalProfile(id: string | number): Observable<ProfessionalProfile | NotAvailableProfile> {
+    return this.http.get<ProfessionalProfile | NotAvailableProfile>(
+      `${this.base}/users/professionals/${id}/profile`
+    );
+  }
+
+  /**
+   * Editar / crear mi propio perfil (requiere login como psicólogo).
+   * Backend: PATCH /api/users/me/profile
+   */
+  updateMyProfile(body: {
+    specialty?: string;
+    experienceYears?: number;
+    services?: string;   // CSV o JSON
+    bio?: string;
+    photoUrl?: string;
+  }): Observable<ProfessionalProfile> {
+    return this.http.patch<ProfessionalProfile>(`${this.base}/users/me/profile`, body);
+  }
+
+  // ======================
+  // HELPERS EXISTENTES
+  // ======================
+
   listAll(role?: 'admin' | 'psicologo' | 'usuario'): Observable<UserLite[]> {
     let params = new HttpParams();
     if (role) params = params.set('role', role);
     return this.http.get<UserLite[]>(`${this.base}/users`, { params });
   }
 
-  /**
-   * Filtra por rol **en el cliente** (por si el backend aún no soporta ?role=).
-   * Detecta role como string o como objeto { name }.
-   */
   listByRoleClientSide(role: 'admin' | 'psicologo' | 'usuario'): Observable<UserLite[]> {
     const target = role.toLowerCase();
     return this.list().pipe(
@@ -55,16 +101,14 @@ export class UsersService {
     );
   }
 
-  /** Conveniencias para el front (psicólogo usa pacientes, admin usa profesionales, etc.) */
   listPatients(): Observable<UserLite[]> {
     return this.listByRoleClientSide('usuario');
   }
 
-  listProfessionals(): Observable<UserLite[]> {
+  listProfessionalsLite(): Observable<UserLite[]> {
     return this.listByRoleClientSide('psicologo');
   }
 
-  // (Opcional) utilidades
   get(id: number): Observable<UserLite> {
     return this.http.get<UserLite>(`${this.base}/users/${id}`);
   }

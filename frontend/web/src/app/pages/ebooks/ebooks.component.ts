@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { EbooksService, CreateEbookDto, Ebook } from '../../services/ebooks.service';
+import { PaymentsService } from '../../services/payments.service';
 
 @Component({
   selector: 'app-ebooks',
@@ -25,6 +26,7 @@ export class EbooksComponent implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(EbooksService);
   private snack = inject(MatSnackBar);
+  private pay = inject(PaymentsService);
 
   loading = false;
   rows: Ebook[] = [];
@@ -34,7 +36,7 @@ export class EbooksComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(120)]],
     description: [''],
     price: [''],
-    fileUrl: [''] // si el usuario prefiere pegar URL en vez de subir archivo
+    fileUrl: ['']
   });
 
   ngOnInit(): void {
@@ -105,6 +107,27 @@ export class EbooksComponent implements OnInit {
           (err?.status ? `Error ${err.status}` : 'Error al crear ebook');
         this.snack.open(msg, 'Ok', { duration: 4000 });
       },
+    });
+  }
+
+  // ✅ Comprar SIN prompt de email (Stripe lo pide en su UI)
+  buy(e: Ebook) {
+    if (!e?.id) {
+      this.snack.open('Ebook inválido', 'Cerrar', { duration: 2500 });
+      return;
+    }
+    if (!e.price || e.price <= 0) {
+      this.snack.open('Este ebook no tiene precio', 'Cerrar', { duration: 2500 });
+      return;
+    }
+
+    this.pay.checkout(e.id).subscribe({
+      next: ({ url }) => { window.location.href = url; },
+      error: (err) => {
+        console.error('[ebooks] checkout error', err);
+        const msg = err?.error?.message || 'No se pudo iniciar el pago';
+        this.snack.open(msg, 'Cerrar', { duration: 3500 });
+      }
     });
   }
 }

@@ -1,0 +1,5 @@
+.upload-card{max-width:740px;margin:16px auto;padding:16px;border-radius:16px}
+.full{width:100%}
+.file-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.muted{color:#6b7280}
+.actions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px}

@@ -1,0 +1,37 @@
+<section class="wrap">
+  <h2>Profesionales</h2>
+
+  <div class="center" *ngIf="loading()">
+    <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+  </div>
+
+  <div class="alert warn" *ngIf="!loading() && error()">{{ error() }}</div>
+  <div class="alert" *ngIf="!loading() && !error() && list().length === 0">
+    No hay profesionales disponibles.
+  </div>
+
+  <div class="grid" *ngIf="!loading() && !error() && list().length">
+    <mat-card class="pro-card" *ngFor="let u of list()">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar"
+             [style.backgroundImage]="'url(' + (u.photoUrl || '/assets/avatar.png') + ')'">
+        </div>
+        <mat-card-title>{{ u.name || u.email }}</mat-card-title>
+        <mat-card-subtitle>{{ u.specialty || (u.role?.name || 'Profesional') }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="muted">{{ u.email }}</p>
+        <mat-chip-set>
+          <mat-chip disabled>Verificado</mat-chip>
+        </mat-chip-set>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <a mat-button color="primary" [routerLink]="['/professionals', u.id]">
+          Ver perfil <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</section>
