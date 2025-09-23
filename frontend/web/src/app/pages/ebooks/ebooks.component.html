@@ -1,39 +1,79 @@
-<h2>Mis ebooks</h2>
-
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Título</mat-label>
-    <input matInput formControlName="title" required>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Descripción (opcional)</mat-label>
-    <input matInput formControlName="description">
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Precio (opcional)</mat-label>
-    <input matInput formControlName="price" type="number" min="0">
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>URL del archivo (opcional)</mat-label>
-    <input matInput formControlName="fileUrl" placeholder="https://...">
-  </mat-form-field>
-
-  <!-- NUEVO: archivo local -->
-  <div style="margin: 8px 0;">
-    <input type="file"
-           (change)="onFileChange($event)"
-           accept=".pdf,.epub,.mobi,application/pdf,application/epub+zip,application/x-mobipocket-ebook">
-    <div *ngIf="selectedFile" style="font-size: 12px; opacity: .8;">
-      Archivo seleccionado: {{ selectedFile.name }}
-    </div>
+<!-- HERO / ENCABEZADO -->
+<section class="page-hero">
+  <div class="page-badge" aria-hidden="true">
+    <mat-icon class="badge-icon">menu_book</mat-icon>
   </div>
 
-  <button mat-raised-button color="primary" [disabled]="loading">Guardar</button>
+  <div class="page-hero__text">
+    <h1>Mis ebooks</h1>
+    <p class="subtitle">
+      Crea y administra tus ebooks. Puedes subir un archivo o pegar una URL externa.
+    </p>
+  </div>
+</section>
+
+<!-- TARJETA DEL FORMULARIO -->
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
+  <!-- TÍTULO -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Título</mat-label>
+    <mat-icon matPrefix class="affix-icon">drive_file_rename_outline</mat-icon>
+    <input matInput formControlName="title" required />
+  </mat-form-field>
+
+  <!-- DESCRIPCIÓN -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Descripción (opcional)</mat-label>
+    <mat-icon matPrefix class="affix-icon">notes</mat-icon>
+    <input matInput formControlName="description" />
+  </mat-form-field>
+
+  <!-- PRECIO con icono + $ como prefix y COP como suffix -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Precio (opcional)</mat-label>
+    <span matPrefix class="affix affix-prefix">
+      <mat-icon class="affix-icon">sell</mat-icon>
+      <span class="currency">$</span>
+    </span>
+    <input matInput formControlName="price" type="number" min="0" placeholder="0" />
+    <span matSuffix class="affix affix-suffix">COP</span>
+  </mat-form-field>
+
+  <!-- URL -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>URL del archivo (opcional)</mat-label>
+    <mat-icon matPrefix class="affix-icon">link</mat-icon>
+    <input matInput formControlName="fileUrl" placeholder="https://..." />
+  </mat-form-field>
+
+  <!-- DROPBOX / SUBIDA LOCAL -->
+  <div class="dropbox" [class.has-file]="selectedFile">
+    <div class="dropbox__left">
+      <mat-icon>upload</mat-icon>
+      <div class="dropbox__text">
+        <strong>Selecciona un archivo</strong>
+        <small>o arrástralo aquí (PDF/EPUB/MOBI)</small>
+      </div>
+    </div>
+
+    <input
+      type="file"
+      (change)="onFileChange($event)"
+      accept=".pdf,.epub,.mobi,application/pdf,application/epub+zip,application/x-mobipocket-ebook"
+      aria-label="Subir archivo de ebook"
+    />
+
+    <span class="dropbox__filename" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="form-actions">
+    <button mat-raised-button color="primary" [disabled]="loading">Guardar</button>
+    <button mat-stroked-button type="button" (click)="clear()">Limpiar</button>
+  </div>
 </form>
 
+<!-- LISTADO -->
 <table class="table" *ngIf="rows?.length">
   <thead>
     <tr>
@@ -48,17 +88,20 @@
     <tr *ngFor="let e of rows">
       <td>{{ e.id }}</td>
       <td>{{ e.title }}</td>
-
-      <!-- 👇 PRECIO EN PESOS COLOMBIANOS (sin decimales) -->
-      <td>{{ e.price != null ? (e.price | currency:'COP':'symbol-narrow':'1.0-0') : '-' }}</td>
-
+      <td>
+        {{ e.price != null ? (e.price | currency : 'COP' : 'symbol-narrow' : '1.0-0') : '-' }}
+      </td>
       <td>
         <a *ngIf="e.fileUrl" [href]="e.fileUrl" target="_blank" rel="noopener">Abrir</a>
         <span *ngIf="!e.fileUrl">-</span>
       </td>
-
       <td>
-        <button mat-stroked-button color="primary" (click)="buy(e)" [disabled]="!e.price || e.price <= 0">
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="buy(e)"
+          [disabled]="!e.price || e.price <= 0"
+        >
           Comprar
         </button>
       </td>
@@ -66,4 +109,11 @@
   </tbody>
 </table>
 
-<p *ngIf="!rows?.length">Aún no tienes ebooks.</p>
+<!-- VACÍO -->
+<div class="empty" *ngIf="!rows?.length">
+  <mat-icon>menu_book</mat-icon>
+  <p>
+    Aún no tienes ebooks.<br />
+    Crea tu primer ebook usando el formulario de arriba.
+  </p>
+</div>

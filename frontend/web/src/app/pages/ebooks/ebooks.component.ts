@@ -5,6 +5,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 import { EbooksService, CreateEbookDto, Ebook } from '../../services/ebooks.service';
 import { PaymentsService } from '../../services/payments.service';
 
@@ -17,10 +19,11 @@ import { PaymentsService } from '../../services/payments.service';
     MatSnackBarModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './ebooks.component.html',
-  styleUrls: ['./ebooks.component.css']
+  styleUrls: ['./ebooks.component.css'],
 })
 export class EbooksComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -36,7 +39,7 @@ export class EbooksComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(120)]],
     description: [''],
     price: [''],
-    fileUrl: ['']
+    fileUrl: [''],
   });
 
   ngOnInit(): void {
@@ -52,7 +55,12 @@ export class EbooksComponent implements OnInit {
 
   onFileChange(ev: Event) {
     const input = ev.target as HTMLInputElement;
-    this.selectedFile = (input.files && input.files[0]) ? input.files[0] : null;
+    this.selectedFile = input.files && input.files[0] ? input.files[0] : null;
+  }
+
+  clear() {
+    this.form.reset();
+    this.selectedFile = null;
   }
 
   private buildDto(): CreateEbookDto {
@@ -92,8 +100,7 @@ export class EbooksComponent implements OnInit {
       next: (created) => {
         this.snack.open('Ebook creado', 'Ok', { duration: 1800 });
         this.rows = [created, ...this.rows];
-        this.form.reset();
-        this.selectedFile = null;
+        this.clear();
         this.loading = false;
       },
       error: (err) => {
@@ -110,7 +117,6 @@ export class EbooksComponent implements OnInit {
     });
   }
 
-  // ✅ Comprar SIN prompt de email (Stripe lo pide en su UI)
   buy(e: Ebook) {
     if (!e?.id) {
       this.snack.open('Ebook inválido', 'Cerrar', { duration: 2500 });
@@ -122,12 +128,12 @@ export class EbooksComponent implements OnInit {
     }
 
     this.pay.checkout(e.id).subscribe({
-      next: ({ url }) => { window.location.href = url; },
+      next: ({ url }) => (window.location.href = url),
       error: (err) => {
         console.error('[ebooks] checkout error', err);
         const msg = err?.error?.message || 'No se pudo iniciar el pago';
         this.snack.open(msg, 'Cerrar', { duration: 3500 });
-      }
+      },
     });
   }
 }

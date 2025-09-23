@@ -1,27 +1,42 @@
 <div class="container">
-  <h2>Blog</h2>
+  <header class="head">
+    <div>
+      <h2>Blog</h2>
+      <p class="muted">Explora publicaciones y novedades de LaMorada.</p>
+    </div>
+  </header>
 
-  <form [formGroup]="form" class="filters" (ngSubmit)="load()">
-    <mat-form-field appearance="outline">
+  <form [formGroup]="form" class="filters card" (ngSubmit)="load()">
+    <mat-form-field appearance="outline" class="fld">
       <mat-label>Buscar</mat-label>
-      <input matInput formControlName="q" placeholder="Título..."/>
+      <input matInput formControlName="q" placeholder="Título…" />
     </mat-form-field>
-    <mat-form-field appearance="outline">
+
+    <mat-form-field appearance="outline" class="fld">
       <mat-label>Categoría</mat-label>
-      <input matInput formControlName="category" placeholder="Ej: terapia"/>
+      <input matInput formControlName="category" placeholder="Ej: terapia" />
     </mat-form-field>
-    <button mat-stroked-button type="submit">Filtrar</button>
-    <a mat-raised-button color="primary" routerLink="/blog/new" class="right">Nuevo</a>
+
+    <div class="btns">
+      <button mat-flat-button type="submit" class="lm-primary">Filtrar</button>
+      <button mat-stroked-button type="button" class="lm-outline" (click)="clear()">Limpiar</button>
+      <a mat-button routerLink="/blog/new" class="lm-ghost">Nuevo</a>
+    </div>
   </form>
 
-  <div class="grid">
-    <mat-card *ngFor="let p of items()">
+  <div class="empty" *ngIf="items().length === 0">No hay publicaciones aún.</div>
+
+  <div class="grid" *ngIf="items().length > 0">
+    <mat-card class="post" *ngFor="let p of items(); trackBy: trackById">
       <img *ngIf="p.coverUrl" [src]="p.coverUrl" alt="cover" />
       <mat-card-title>{{ p.title }}</mat-card-title>
-      <mat-card-subtitle>{{ p.category }} · {{ p.createdAt | date:'mediumDate' }}</mat-card-subtitle>
+      <mat-card-subtitle>
+        {{ p.category || 'Sin categoría' }} · {{ p.createdAt | date : 'mediumDate' }}
+      </mat-card-subtitle>
+
       <div class="actions">
-        <a mat-button color="primary" [routerLink]="['/blog/slug', p.slug]">Leer</a>
-        <a mat-button color="accent" [routerLink]="['/blog', p.id, 'edit']">Editar</a>
+        <a mat-button [routerLink]="['/blog/slug', p.slug]">Leer</a>
+        <a mat-button [routerLink]="['/blog', p.id, 'edit']">Editar</a>
       </div>
     </mat-card>
   </div>

@@ -1,79 +1,153 @@
-<h1 style="margin: 24px 0 8px;">Citas</h1>
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-badge">
+    <mat-icon class="badge-icon">event_note</mat-icon>
+  </div>
+  <div class="page-hero__text">
+    <h1>Citas</h1>
+    <p class="subtitle">Crea y gestiona citas entre pacientes y profesionales.</p>
+  </div>
+</section>
 
-<div style="display:grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr; gap:16px; max-width: 1200px;">
-  <!-- Paciente -->
-  <mat-form-field appearance="outline">
-    <mat-label>Paciente</mat-label>
-    <mat-select [formControl]="form.controls['userId']">
-      <mat-option *ngFor="let u of patients" [value]="u.id">{{ u.name }} (ID {{u.id}})</mat-option>
-    </mat-select>
-  </mat-form-field>
+<!-- CARD: FORM / FILTROS -->
+<div class="form-card">
+  <form class="form-grid" [formGroup]="fg" (ngSubmit)="create()">
+    <!-- Paciente (solo psicólogo/admin) -->
+    <mat-form-field appearance="outline" *ngIf="!isUser">
+      <mat-label>Paciente</mat-label>
+      <mat-select formControlName="userId" required>
+        <mat-option *ngFor="let u of patients" [value]="u.id">
+          {{ u.name }} (ID {{ u.id }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <!-- Profesional fijo (psicólogo logueado) -->
-  <mat-form-field appearance="outline">
-    <mat-label>Profesional</mat-label>
-    <input matInput [value]="(auth.user()?.name || ('ID ' + auth.user()?.id)) + ' (Tú)'" disabled>
-  </mat-form-field>
+    <!-- Profesional (modo usuario) -->
+    <mat-form-field appearance="outline" *ngIf="isUser; else proSelf">
+      <mat-label>Profesional</mat-label>
+      <mat-select formControlName="professionalId" required>
+        <mat-option *ngFor="let p of professionals" [value]="p.id">
+          {{ p.name }} (ID {{ p.id }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <!-- Fecha filtrada por tu disponibilidad -->
-  <mat-form-field appearance="outline">
-    <mat-label>Fecha**</mat-label>
-    <input
-      matInput
-      [matDatepicker]="picker"
-      placeholder="dd/mm/aaaa"
-      [formControl]="form.controls['date']"
-      [matDatepickerFilter]="dateFilter"
-    />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+    <!-- Profesional fijo (tú) -->
+    <ng-template #proSelf>
+      <mat-form-field appearance="outline">
+        <mat-label>Profesional</mat-label>
+        <input matInput [value]="proDisplay" disabled />
+      </mat-form-field>
+    </ng-template>
 
-  <!-- Hora inicio (desde slots disponibles) -->
-  <mat-form-field appearance="outline">
-    <mat-label>Hora inicio**</mat-label>
-    <mat-select [formControl]="form.controls['start']" [disabled]="!hoursStart.length">
-      <mat-option *ngFor="let t of hoursStart" [value]="t">{{ t }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <!-- Fecha -->
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha</mat-label>
+      <input
+        matInput
+        placeholder="dd/mm/aaaa"
+        [matDatepicker]="picker"
+        formControlName="date"
+        required
+        [matDatepickerFilter]="dateFilter"
+        readonly
+        (focus)="picker.open()"
+        (click)="picker.open()"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
-  <!-- Hora fin (desde slots disponibles) -->
-  <mat-form-field appearance="outline">
-    <mat-label>Hora fin**</mat-label>
-    <mat-select [formControl]="form.controls['end']" [disabled]="!hoursEnd.length">
-      <mat-option *ngFor="let t of hoursEnd" [value]="t">{{ t }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <!-- Hora inicio -->
+    <mat-form-field appearance="outline">
+      <mat-label>Hora inicio</mat-label>
+      <mat-select formControlName="startTime" required [disabled]="startOptions.length === 0">
+        <mat-option *ngFor="let t of startOptions" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Hora fin -->
+    <mat-form-field appearance="outline">
+      <mat-label>Hora fin</mat-label>
+      <mat-select formControlName="endTime" required [disabled]="endOptions.length === 0">
+        <mat-option *ngFor="let t of endOptions" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-flat-button color="primary" [disabled]="!canSubmit">Crear cita</button>
+    </div>
+  </form>
+
+  <p *ngIf="fg.value.date && startOptions.length === 0" class="warn">
+    No hay disponibilidad para la fecha elegida.
+  </p>
 </div>
 
-<div style="margin-top: 16px;">
-  <button mat-raised-button color="primary" (click)="create()">Crear cita</button>
+<!-- CARD: TABLA -->
+<div class="form-card">
+  <div class="table-head">
+    <h3 class="section-title">Citas registradas</h3>
+    <span class="muted" *ngIf="ds?.data?.length">Total: {{ ds.data.length }}</span>
+  </div>
+
+  <div class="empty" *ngIf="!ds?.data?.length">
+    <mat-icon>event_busy</mat-icon>
+    No hay citas registradas aún.
+  </div>
+
+  <table mat-table [dataSource]="ds" class="table mat-elevation-z1" *ngIf="ds?.data?.length">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>#</th>
+      <td mat-cell *matCellDef="let a">{{ a.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef>Paciente</th>
+      <td mat-cell *matCellDef="let a">{{ a.user?.name || 'ID ' + a.user?.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="pro">
+      <th mat-header-cell *matHeaderCellDef>Profesional</th>
+      <td mat-cell *matCellDef="let a">{{ a.professional?.name || 'ID ' + a.professional?.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="startsAt">
+      <th mat-header-cell *matHeaderCellDef>Inicio</th>
+      <td mat-cell *matCellDef="let a">{{ a.startsAt | date : 'short' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="endsAt">
+      <th mat-header-cell *matHeaderCellDef>Fin</th>
+      <td mat-cell *matCellDef="let a">{{ a.endsAt | date : 'short' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let a">
+        <span
+          class="chip"
+          [class.chip--pending]="a.status === 'pendiente' || a.status === 'pending'"
+          [class.chip--done]="
+            a.status === 'confirmada' || a.status === 'confirmado' || a.status === 'done'
+          "
+          [class.chip--cancel]="a.status === 'cancelada' || a.status === 'cancel'"
+        >
+          {{ a.status ? (a.status | titlecase) : '—' }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="right">Acciones</th>
+      <td mat-cell *matCellDef="let a" class="right">
+        <button mat-stroked-button color="warn" (click)="cancel(a.id)">Cancelar</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="cols"></tr>
+    <tr mat-row *matRowDef="let row; columns: cols"></tr>
+  </table>
+
+  <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
 </div>
-
-<hr style="margin: 24px 0;">
-
-<table class="table" *ngIf="rows?.length; else empty">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Paciente</th>
-      <th>Profesional</th>
-      <th>Inicio</th>
-      <th>Fin</th>
-      <th>Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let r of rows; let i = index">
-      <td>{{ i + 1 }}</td>
-      <td>{{ r.user?.name || ('ID ' + r.user?.id) }}</td>
-      <td>{{ r.professional?.name || ('ID ' + r.professional?.id) }}</td>
-      <td>{{ r.startsAt | date:'short' }}</td>
-      <td>{{ r.endsAt   | date:'short' }}</td>
-      <td>{{ r.status }}</td>
-    </tr>
-  </tbody>
-</table>
-<ng-template #empty>
-  <p>Selecciona una fecha para ver tu agenda o aún no tienes citas ese día.</p>
-</ng-template>

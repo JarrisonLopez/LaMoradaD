@@ -41,10 +41,19 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  get email() {
+    return this.form.get('email');
+  }
+  get password() {
+    return this.form.get('password');
+  }
+
   async onSubmit() {
-    if (this.loading) return;
-    if (this.form.invalid) {
-      this.snack.open('Completa los campos correctamente', 'Cerrar', { duration: 2500 });
+    if (this.loading || this.form.invalid) {
+      this.form.markAllAsTouched();
+      if (this.form.invalid) {
+        this.snack.open('Completa los campos correctamente', 'Cerrar', { duration: 2500 });
+      }
       return;
     }
 
@@ -52,25 +61,16 @@ export class LoginComponent {
     this.loading = true;
 
     try {
-      // Login: normaliza y persiste el usuario dentro de AuthService
       await firstValueFrom(this.auth.login(email!, password!));
 
       const user: AuthUser | null = this.auth.user();
       if (!user) throw new Error('No se pudo obtener el usuario');
 
-      // Mostrar nombre si existe; si no, fallback a email o "Usuario"
       const displayName = user.name || user.email || 'Usuario';
       this.snack.open(`¡Bienvenido ${displayName}!`, 'Ok', { duration: 1800 });
 
-      // Redirección por rol (ya normalizado: 'admin' | 'psicologo' | 'usuario')
       const role = user.role as UserRole;
-      if (role === 'admin') {
-        this.router.navigateByUrl('/users');
-      } else if (role === 'psicologo') {
-        this.router.navigateByUrl('/appointments');
-      } else {
-        this.router.navigateByUrl('/appointments');
-      }
+      this.router.navigateByUrl(role === 'admin' ? '/users' : '/appointments');
     } catch (err: any) {
       const message = err?.error?.message || err?.message || 'No se pudo iniciar sesión';
       this.snack.open(message, 'Cerrar', { duration: 3000 });

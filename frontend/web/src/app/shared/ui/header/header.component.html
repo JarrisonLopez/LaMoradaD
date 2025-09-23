@@ -1,51 +1,45 @@
-<mat-toolbar color="primary">
-  <a routerLink="/" class="brand" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px;">
-    <mat-icon>home</mat-icon>
+<mat-toolbar class="bar" role="navigation">
+  <!-- Marca -->
+  <a routerLink="/" class="brand" aria-label="LaMorada">
+    <mat-icon fontIcon="home"></mat-icon>
     <span>LaMorada</span>
   </a>
 
-  <span class="spacer"></span>
+  <!-- Navegación -->
+  <nav class="nav">
+    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a routerLink="/users" routerLinkActive="active">Usuarios</a>
+    <a routerLink="/roles" routerLinkActive="active">Roles</a>
+    <a routerLink="/appointments" routerLinkActive="active">Citas</a>
+    <a routerLink="/availability" routerLinkActive="active">Disponibilidad</a>
+    <a routerLink="/ebooks" routerLinkActive="active">Ebooks</a>
+    <a routerLink="/tienda" routerLinkActive="active">Tienda</a>
+    <a routerLink="/professionals" routerLinkActive="active">Profesionales</a>
+    <a routerLink="/podcasts" routerLinkActive="active">Podcasts</a>
+    <a routerLink="/blog" routerLinkActive="active">Blog</a>
 
-  <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-  <a mat-button routerLink="/users" routerLinkActive="active">Usuarios</a>
-  <a mat-button routerLink="/roles" routerLinkActive="active">Roles</a>
-  <a mat-button routerLink="/appointments" routerLinkActive="active">Citas</a>
-  <a mat-button routerLink="/availability" routerLinkActive="active">Disponibilidad</a>
-  <a mat-button routerLink="/ebooks" routerLinkActive="active">Ebooks</a>
-  <a routerLink="/tienda" routerLinkActive="active">Tienda</a>
+    <!-- Solo psicólogo ve Métricas -->
+    <a *ngIf="user()?.role === 'psicologo'" routerLink="/metrics-lite" routerLinkActive="active"
+      >Métricas</a
+    >
+  </nav>
 
-  <!-- 👇 Acceso público al listado de profesionales -->
-  <a mat-button routerLink="/professionals" routerLinkActive="active">Profesionales</a>
+  <!-- Acciones (lado derecho) -->
+  <div class="actions">
+    <!-- Botones de creación para psicólogo o admin -->
+    <ng-container *ngIf="user()?.role === 'psicologo' || user()?.role === 'admin'">
+      <a class="pill pill-outline" routerLink="/podcasts/new">Publicar episodio</a>
+      <a class="pill pill-outline" routerLink="/blog/new">Nueva publicación</a>
+    </ng-container>
 
-  <!-- 👇 Acceso público a podcasts -->
-  <a mat-button routerLink="/podcasts" routerLinkActive="active">Podcasts</a>
+    <!-- Sesión -->
+    <ng-container *ngIf="user() as u; else guest">
+      <span class="user">{{ u.name || u.email }} · {{ roleLabel(u.role) }}</span>
+      <button class="pill pill-outline" type="button" (click)="logout()">Salir</button>
+    </ng-container>
 
-  <!-- 👇 Acceso público al blog -->
-  <a mat-button routerLink="/blog" routerLinkActive="active">Blog</a>
-
-  <ng-container *ngIf="user()?.role === 'psicologo'">
-    <a mat-button routerLink="/metrics-lite" routerLinkActive="active">Métricas</a>
-  </ng-container>
-
-  <!-- Links para crear: solo psicólogo o admin -->
-  <ng-container *ngIf="user()?.role === 'psicologo' || user()?.role === 'admin'">
-    <a mat-stroked-button color="accent" routerLink="/podcasts/new" style="margin-left:8px">
-      Publicar episodio
-    </a>
-    <a mat-stroked-button color="accent" routerLink="/blog/new" style="margin-left:8px">
-      Nueva publicación
-    </a>
-  </ng-container>
-
-
-  <span class="spacer"></span>
-
-  <ng-container *ngIf="user() as u; else guest">
-    <span style="margin-right:12px;">{{ u.name }} · {{ roleLabel(u.role) }}</span>
-    <button mat-stroked-button (click)="logout()">Salir</button>
-  </ng-container>
-
-  <ng-template #guest>
-    <a mat-stroked-button color="accent" routerLink="/login">Ingresar</a>
-  </ng-template>
+    <ng-template #guest>
+      <a class="pill pill-outline" routerLink="/login">Ingresar</a>
+    </ng-template>
+  </div>
 </mat-toolbar>

@@ -1,3 +1,257 @@
-form { max-width: 420px; }
-.table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-.table th, .table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+/* =========================================
+   VARIABLES
+   ========================================= */
+:host {
+  --lm-surface: #ffffff;
+  --lm-border: #ece8ff;
+  --lm-text: #1e1b2f;
+  --lm-text-soft: #6f6a86;
+
+  --lm-primary: #6b5bfd;
+  --lm-primary-600: #5a4fcf;
+  --lm-primary-300: #a699ff;
+
+  --lm-radius-xl: 18px;
+  --lm-radius-md: 12px;
+
+  --lm-shadow-1: 0 10px 30px rgba(80, 56, 200, 0.16);
+  --lm-shadow-2: 0 18px 50px rgba(80, 56, 200, 0.18);
+}
+
+/* =========================================
+   HERO
+   ========================================= */
+.page-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 18px;
+}
+
+.page-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--lm-shadow-2);
+  background: linear-gradient(135deg, #5a4fcf 0%, #6a56e8 45%, #9b86ff 100%);
+}
+
+.page-badge .badge-icon {
+  color: #f5f2ff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.28)) drop-shadow(0 2px 6px rgba(76, 51, 190, 0.38));
+  opacity: 0.98;
+  font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+}
+
+.page-hero__text h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  line-height: 1.15;
+  color: var(--lm-text);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--lm-text-soft);
+  font-size: 0.975rem;
+}
+
+/* =========================================
+   TARJETA FORMULARIO
+   ========================================= */
+.form-card {
+  background: var(--lm-surface);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  padding: 16px;
+  box-shadow: var(--lm-shadow-1);
+  display: grid;
+  gap: 12px;
+  max-width: 720px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Affixes (iconos/textos de prefix/suffix) */
+.affix {
+  color: var(--lm-text-soft);
+  display: inline-flex;
+  align-items: center;
+}
+.affix-icon {
+  color: var(--lm-text-soft);
+  margin-right: 6px;
+}
+.affix-prefix .currency {
+  margin-left: 2px;
+}
+.affix-suffix {
+  margin-left: 6px;
+}
+
+/* =========================================
+   DROPBOX
+   ========================================= */
+.dropbox {
+  margin-top: 4px;
+  border: 1px dashed var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  background: linear-gradient(180deg, #fff, #fbfaff);
+}
+.dropbox:hover {
+  border-color: var(--lm-primary-300);
+  box-shadow: 0 8px 24px rgba(80, 56, 200, 0.12);
+}
+.dropbox__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dropbox .mat-icon {
+  color: var(--lm-primary-600);
+}
+.dropbox__text strong {
+  display: block;
+  color: var(--lm-text);
+  font-weight: 600;
+}
+.dropbox__text small {
+  color: var(--lm-text-soft);
+  line-height: 1.1;
+}
+.dropbox input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.dropbox__filename {
+  margin-left: auto;
+  color: var(--lm-text-soft);
+  font-size: 0.9rem;
+}
+.dropbox.has-file {
+  border-color: var(--lm-primary-300);
+  box-shadow: 0 10px 26px rgba(80, 56, 200, 0.14);
+}
+
+/* =========================================
+   ACCIONES
+   ========================================= */
+.form-actions {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================
+   TABLA
+   ========================================= */
+.table {
+  width: 100%;
+  max-width: 980px;
+  border-collapse: collapse;
+  margin: 18px 0 0;
+  background: var(--lm-surface);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--lm-shadow-1);
+}
+.table th,
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1efff;
+}
+.table thead th {
+  background: linear-gradient(0deg, #faf8ff, #fff);
+  color: var(--lm-text);
+  font-weight: 600;
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================
+   VACÍO
+   ========================================= */
+.empty {
+  max-width: 720px;
+  margin: 26px 0 6px;
+  padding: 28px 22px;
+  text-align: center;
+  background: var(--lm-surface);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  box-shadow: var(--lm-shadow-1);
+  color: var(--lm-text-soft);
+}
+.empty .mat-icon {
+  display: block;
+  margin: 0 auto 8px;
+  color: var(--lm-primary-600);
+}
+
+/* =========================================
+   BOTONES MORADOS (LaMorada)
+   (SOLO color de botones, sin tocar nada más)
+   ========================================= */
+
+/* Botón principal (raised/primary): morado con degradado */
+.form-actions .mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(
+    135deg,
+    var(--lm-primary) 0%,
+    var(--lm-primary-600) 60%,
+    #7f6dff 100%
+  );
+  color: #fff;
+  border: none;
+  border-radius: var(--lm-radius-md);
+  box-shadow: 0 12px 28px rgba(80, 56, 200, 0.22);
+}
+
+.form-actions .mat-mdc-raised-button.mat-primary:hover:not(.mdc-button--disabled) {
+  background: linear-gradient(135deg, #5f55f6 0%, #5147c6 60%, #6f60ff 100%);
+  box-shadow: 0 14px 34px rgba(80, 56, 200, 0.28);
+}
+
+.form-actions .mat-mdc-raised-button.mat-primary:disabled {
+  background: #bcb2ff !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  opacity: 0.8;
+}
+
+/* Botón secundario (outlined/stroked): borde + texto morado */
+.form-actions .mat-mdc-outlined-button,
+.form-actions .mat-mdc-stroked-button {
+  border-radius: var(--lm-radius-md);
+  border-color: var(--lm-primary) !important;
+  color: var(--lm-primary) !important;
+  background: #fff;
+}
+
+.form-actions .mat-mdc-outlined-button:hover,
+.form-actions .mat-mdc-stroked-button:hover {
+  background: rgba(107, 91, 253, 0.08);
+}
+
+/* Ripple morado en botones */
+.form-actions .mat-mdc-button-ripple,
+.form-actions .mat-mdc-button-persistent-ripple {
+  --mat-mdc-button-ripple-color: rgba(107, 91, 253, 0.25);
+  --mat-mdc-button-persistent-ripple-color: rgba(107, 91, 253, 0.25);
+}

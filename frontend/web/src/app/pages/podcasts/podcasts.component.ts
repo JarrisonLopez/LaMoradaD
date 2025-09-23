@@ -15,14 +15,21 @@ import { PodcastsService, PodcastEpisode } from '../../services/podcasts.service
 })
 export class PodcastsComponent implements OnInit {
   private api = inject(PodcastsService);
+
   loading = signal(true);
   list = signal<PodcastEpisode[]>([]);
   error = signal<string | null>(null);
 
   ngOnInit(): void {
     this.api.list().subscribe({
-      next: (rows) => { this.list.set(rows || []); this.loading.set(false); },
-      error: () => { this.error.set('No se pudo cargar el listado'); this.loading.set(false); }
+      next: (rows) => {
+        this.list.set(rows || []);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar el listado');
+        this.loading.set(false);
+      },
     });
   }
 }

@@ -1,8 +1,8 @@
-<h1 style="margin: 24px 0 8px;">Disponibilidad</h1>
+<h1 style="margin: 24px 0 8px">Disponibilidad</h1>
 
 <!-- Crear disponibilidad -->
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; max-width: 980px;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; max-width: 980px">
     <mat-form-field appearance="outline">
       <mat-label>Desde</mat-label>
       <input
@@ -44,12 +44,12 @@
     </mat-form-field>
   </div>
 
-  <div style="margin-top: 24px;">
+  <div style="margin-top: 24px">
     <button mat-raised-button color="primary" type="submit">Agregar</button>
   </div>
 </form>
 
-<hr style="margin: 24px 0;">
+<hr style="margin: 24px 0" />
 
 <!-- Mis disponibilidades -->
 <h2>Mis disponibilidades activas</h2>
@@ -58,13 +58,13 @@
     <tr>
       <th>Desde</th>
       <th>Hasta</th>
-      <th style="width: 140px;">Acciones</th>
+      <th style="width: 140px">Acciones</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let a of myAvail">
-      <td>{{ a.from | date: 'short' }}</td>
-      <td>{{ a.to   | date: 'short' }}</td>
+      <td>{{ a.from | date : 'short' }}</td>
+      <td>{{ a.to | date : 'short' }}</td>
       <td>
         <button
           mat-stroked-button
@@ -82,11 +82,11 @@
   <p>No tienes disponibilidades cargadas todavía.</p>
 </ng-template>
 
-<hr style="margin: 24px 0;">
+<hr style="margin: 24px 0" />
 
 <!-- Ver slots de un día (Reactive Forms, sin ngModel) -->
 <h2>Ver slots del día</h2>
-<div style="display:flex; gap:12px; align-items:center;">
+<div style="display: flex; gap: 12px; align-items: center">
   <mat-form-field appearance="outline">
     <mat-label>Fecha</mat-label>
     <input
@@ -102,15 +102,20 @@
   <button mat-raised-button color="primary" (click)="loadSlotsForSelectedDay()">Ver slots</button>
 </div>
 
-<div *ngIf="slots" style="margin-top: 12px;">
-  <p><strong>{{ slots.date }}</strong> — Intervalo: {{ slots.interval }} min</p>
-  <div style="display:flex; flex-wrap: wrap; gap:8px;">
-    <span *ngFor="let s of slots.slots"
-          [style]="
-            'padding:6px 10px;border-radius:8px;border:1px solid ' +
-            (s.available ? '#4caf50' : '#f44336') +
-            ';opacity:' + (s.available ? '1' : '.45')
-          ">
+<div *ngIf="slots" style="margin-top: 12px">
+  <p>
+    <strong>{{ slots.date }}</strong> — Intervalo: {{ slots.interval }} min
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <span
+      *ngFor="let s of slots.slots"
+      [style]="
+        'padding:6px 10px;border-radius:8px;border:1px solid ' +
+        (s.available ? '#4caf50' : '#f44336') +
+        ';opacity:' +
+        (s.available ? '1' : '.45')
+      "
+    >
       {{ s.start }}–{{ s.end }}
     </span>
   </div>

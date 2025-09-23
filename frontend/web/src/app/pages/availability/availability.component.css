@@ -1,3 +1,221 @@
-form { max-width: 420px; }
-.table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-.table th, .table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+/* =========================================
+   VARIABLES
+   ========================================= */
+:host {
+  --lm-surface: #ffffff;
+  --lm-border: #ece8ff;
+  --lm-text: #1e1b2f;
+  --lm-text-soft: #6f6a86;
+
+  --lm-primary: #6b5bfd;
+  --lm-primary-600: #5a4fcf;
+  --lm-primary-300: #a699ff;
+
+  --lm-radius-xl: 18px;
+  --lm-radius-md: 12px;
+
+  --lm-shadow-1: 0 10px 30px rgba(80, 56, 200, 0.12);
+  --lm-shadow-2: 0 18px 50px rgba(80, 56, 200, 0.16);
+}
+
+/* =========================================
+   HERO
+   ========================================= */
+.page-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 18px;
+}
+
+.page-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--lm-shadow-2);
+  background: linear-gradient(135deg, #5a4fcf 0%, #6a56e8 45%, #9b86ff 100%);
+}
+
+.page-badge .badge-icon {
+  color: #f5f2ff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.28)) drop-shadow(0 2px 6px rgba(76, 51, 190, 0.38));
+  opacity: 0.98;
+  font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+}
+
+.page-hero__text h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  line-height: 1.2;
+  color: var(--lm-text);
+  letter-spacing: -0.02em;
+}
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--lm-text-soft);
+  font-size: 0.975rem;
+}
+
+/* =========================================
+   CARD
+   ========================================= */
+.form-card {
+  background: var(--lm-surface);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  padding: 16px;
+  box-shadow: var(--lm-shadow-1);
+  display: grid;
+  gap: 12px;
+  max-width: 980px;
+}
+.section-title {
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+  color: var(--lm-text);
+}
+
+/* ancho total de campos Material dentro de la tarjeta */
+.form-card .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* =========================================
+   GRID
+   ========================================= */
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+.form-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.form-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1024px) {
+  .form-grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .form-grid.cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .form-grid.cols-4,
+  .form-grid.cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.align-end {
+  display: flex;
+  align-items: end;
+}
+
+/* =========================================
+   BOTONES (mat-primary morado)
+   ========================================= */
+:host ::ng-deep .mat-mdc-raised-button.mat-primary,
+:host ::ng-deep .mat-mdc-unelevated-button.mat-primary {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--lm-primary) 0%,
+    var(--lm-primary-600) 60%,
+    #7f6dff 100%
+  );
+  box-shadow: 0 10px 24px rgba(80, 56, 200, 0.2);
+}
+:host ::ng-deep .mat-mdc-raised-button.mat-primary:hover,
+:host ::ng-deep .mat-mdc-unelevated-button.mat-primary:hover {
+  background: linear-gradient(135deg, #5f55f6 0%, #5147c6 60%, #6f60ff 100%);
+  box-shadow: 0 12px 28px rgba(80, 56, 200, 0.26);
+}
+
+/* =========================================
+   TABLA
+   ========================================= */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  overflow: hidden;
+  background: var(--lm-surface);
+  box-shadow: var(--lm-shadow-1);
+}
+.table th,
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1efff;
+}
+.table thead th {
+  background: linear-gradient(0deg, #faf8ff, #fff);
+  color: var(--lm-text);
+  font-weight: 600;
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+.actions-col {
+  white-space: nowrap;
+}
+
+/* =========================================
+   EMPTY
+   ========================================= */
+.empty {
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-xl);
+  padding: 18px 14px;
+  color: var(--lm-text-soft);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--lm-shadow-1);
+}
+.empty .mat-icon {
+  color: var(--lm-primary-600);
+}
+
+/* =========================================
+   SLOTS
+   ========================================= */
+.slots-wrapper {
+  margin-top: 10px;
+}
+.slots-meta {
+  margin: 0 0 8px;
+  color: var(--lm-text-soft);
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  border: 1px solid var(--lm-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #fff;
+  color: var(--lm-text);
+  font-size: 0.92rem;
+}
+.chip.available {
+  border-color: #4caf50;
+}
+.chip.unavailable {
+  border-color: #f44336;
+  opacity: 0.45;
+}
+
+/* separación entre tarjetas */
+.form-card + .form-card {
+  margin-top: 16px;
+}

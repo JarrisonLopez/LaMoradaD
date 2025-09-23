@@ -1,42 +1,72 @@
-<mat-card class="upload-card">
-  <h2>Publicar pódcast</h2>
+<!-- Hero -->
+<section class="page-hero">
+  <div class="page-badge">
+    <mat-icon class="badge-icon">podcasts</mat-icon>
+  </div>
+  <div class="page-hero__text">
+    <h1>Publicar pódcast</h1>
+    <p class="subtitle">Sube un archivo MP3/WAV o pega una URL pública.</p>
+  </div>
+</section>
 
-  <mat-button-toggle-group [value]="mode()" (change)="mode.set($event.value)">
-    <mat-button-toggle value="file">Subir archivo</mat-button-toggle>
-    <mat-button-toggle value="url">Desde URL</mat-button-toggle>
-  </mat-button-toggle-group>
+<!-- Card principal -->
+<mat-card class="form-card">
+  <!-- Selector de modo -->
+  <div class="mode-toggle">
+    <mat-button-toggle-group
+      [value]="mode()"
+      (change)="mode.set($event.value)"
+      aria-label="Modo de publicación"
+    >
+      <mat-button-toggle value="file">Subir archivo</mat-button-toggle>
+      <mat-button-toggle value="url">Desde URL</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()">
-    <mat-form-field appearance="outline" class="full">
+    <!-- Título -->
+    <mat-form-field appearance="outline">
       <mat-label>Título*</mat-label>
+      <mat-icon matPrefix>edit</mat-icon>
       <input matInput formControlName="title" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full">
+    <!-- Descripción -->
+    <mat-form-field appearance="outline">
       <mat-label>Descripción</mat-label>
+      <mat-icon matPrefix>subject</mat-icon>
       <textarea matInput rows="4" formControlName="description"></textarea>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full">
+    <!-- Categoría -->
+    <mat-form-field appearance="outline">
       <mat-label>Categoría</mat-label>
+      <mat-icon matPrefix>label</mat-icon>
       <input matInput formControlName="category" />
     </mat-form-field>
 
     <!-- Subir archivo -->
-    <div class="file-row" *ngIf="mode() === 'file'">
+    <div class="dropbox" [class.has-file]="!!file" *ngIf="mode() === 'file'">
+      <mat-icon>upload</mat-icon>
+      <div class="dropbox__text">
+        <strong>Selecciona un archivo</strong>
+        <small>o arrástralo aquí (MP3/WAV · máx. 50MB)</small>
+      </div>
+      <div class="dropbox__filename" *ngIf="file">{{ file.name }}</div>
       <input type="file" accept=".mp3,.wav,audio/*" (change)="onFile($event)" />
-      <span class="muted" *ngIf="file">{{ file.name }}</span>
-      <div class="muted" style="margin-left:auto">Max 50 MB · MP3/WAV</div>
     </div>
 
     <!-- Desde URL -->
-    <mat-form-field appearance="outline" class="full" *ngIf="mode() === 'url'">
-      <mat-label>URL del audio </mat-label>
-      <input matInput formControlName="audioUrl" placeholder="https://.../mi-episodio.mp3" />
+    <mat-form-field appearance="outline" *ngIf="mode() === 'url'">
+      <mat-label>URL del audio</mat-label>
+      <mat-icon matPrefix>link</mat-icon>
+      <input matInput formControlName="audioUrl" placeholder="https://…/mi-episodio.mp3" />
     </mat-form-field>
 
+    <!-- Progreso -->
     <mat-progress-bar *ngIf="uploading()" [value]="progress()"></mat-progress-bar>
 
+    <!-- Acciones -->
     <div class="actions">
       <button mat-stroked-button type="button" routerLink="/podcasts">Cancelar</button>
       <button mat-raised-button color="primary" type="submit">Publicar</button>

@@ -1,37 +1,89 @@
-<section class="wrap">
-  <h2>Profesionales</h2>
+<section class="page">
+  <!-- Contenedor -->
+  <div class="container">
+    <!-- Encabezado -->
+    <header class="head">
+      <div class="title">
+        <h1>Profesionales</h1>
+        <p class="muted">Conecta con profesionales verificados y agenda en minutos.</p>
+      </div>
+    </header>
 
-  <div class="center" *ngIf="loading()">
-    <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
-  </div>
+    <!-- Filtros en tarjeta -->
+    <div class="filters card">
+      <mat-form-field appearance="outline" class="f-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Buscar por nombre o email"
+          [(ngModel)]="q"
+          (ngModelChange)="applyFilters()"
+        />
+      </mat-form-field>
 
-  <div class="alert warn" *ngIf="!loading() && error()">{{ error() }}</div>
-  <div class="alert" *ngIf="!loading() && !error() && list().length === 0">
-    No hay profesionales disponibles.
-  </div>
+      <mat-form-field appearance="outline" class="f-select">
+        <mat-label>Especialidad</mat-label>
+        <mat-select [(ngModel)]="specialty" (selectionChange)="applyFilters()">
+          <mat-option [value]="''">Todas</mat-option>
+          <mat-option *ngFor="let s of specialties()" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-  <div class="grid" *ngIf="!loading() && !error() && list().length">
-    <mat-card class="pro-card" *ngFor="let u of list()">
-      <mat-card-header>
-        <div mat-card-avatar class="avatar"
-             [style.backgroundImage]="'url(' + (u.photoUrl || '/assets/avatar.png') + ')'">
-        </div>
-        <mat-card-title>{{ u.name || u.email }}</mat-card-title>
-        <mat-card-subtitle>{{ u.specialty || (u.role?.name || 'Profesional') }}</mat-card-subtitle>
-      </mat-card-header>
+      <mat-form-field appearance="outline" class="f-select">
+        <mat-label>Ordenar</mat-label>
+        <mat-select [(ngModel)]="sort" (selectionChange)="applyFilters()">
+          <mat-option value="name-asc">Nombre (A-Z)</mat-option>
+          <mat-option value="name-desc">Nombre (Z-A)</mat-option>
+          <mat-option value="recent">Más recientes</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-      <mat-card-content>
-        <p class="muted">{{ u.email }}</p>
-        <mat-chip-set>
-          <mat-chip disabled>Verificado</mat-chip>
-        </mat-chip-set>
-      </mat-card-content>
+    <!-- Loading / errores / vacío -->
+    <div class="center" *ngIf="loading()">
+      <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+    </div>
+    <div class="alert warn" *ngIf="!loading() && error()">{{ error() }}</div>
+    <div class="alert" *ngIf="!loading() && !error() && vm().length === 0">
+      No hay profesionales que coincidan con tu búsqueda.
+    </div>
 
-      <mat-card-actions>
-        <a mat-button color="primary" [routerLink]="['/professionals', u.id]">
-          Ver perfil <mat-icon>arrow_forward</mat-icon>
-        </a>
-      </mat-card-actions>
-    </mat-card>
+    <!-- Grid de tarjetas -->
+    <div class="grid" *ngIf="!loading() && !error() && vm().length">
+      <mat-card class="pro-card" *ngFor="let u of vm()" (click)="goProfile(u)">
+        <mat-card-header>
+          <div
+            mat-card-avatar
+            class="avatar"
+            [class.fallback]="!u.photoUrl"
+            [style.backgroundImage]="u.photoUrl ? 'url(' + u.photoUrl + ')' : null"
+          >
+            <span *ngIf="!u.photoUrl">{{ initials(u.name || u.email) }}</span>
+          </div>
+
+          <mat-card-title>{{ u.name || u.email || 'Profesional' }}</mat-card-title>
+          <mat-card-subtitle>{{ u.specialty || u.role?.name || 'Profesional' }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p class="muted email">{{ u.email || '—' }}</p>
+          <mat-chip-set>
+            <mat-chip class="success" *ngIf="u.verified">Verificado</mat-chip>
+            <mat-chip *ngIf="u.specialty">{{ u.specialty }}</mat-chip>
+          </mat-chip-set>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <a
+            mat-button
+            color="primary"
+            [routerLink]="['/professionals', u.id]"
+            (click)="$event.stopPropagation()"
+          >
+            Ver perfil <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </section>

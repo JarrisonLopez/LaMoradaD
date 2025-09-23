@@ -1,72 +1,146 @@
-/* ===== Header moderno LaMorada ===== */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.65);
-  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
-  border: 1px solid #ece8ff;
-}
-html.lm-dark .header,
-:root:where([style*='--lm-scheme: dark']) .header {
-  background: rgba(22, 22, 34, 0.75);
-  border-color: var(--color-border);
+:root {
+  --lm-brand: #5a33d6; /* Morado principal */
+  --lm-brand-600: #4728aa;
+  --lm-text-strong: #17151f;
+  --lm-text-soft: #6b6b78;
+  --lm-border: rgba(28, 19, 48, 0.14);
+  --lm-surface: #ffffffcc;
+  --lm-shadow: 0 6px 18px rgba(28, 19, 48, 0.05), 0 1px 6px rgba(28, 19, 48, 0.04);
 }
 
-/* Layout interno */
-.header-inner {
-  display: flex;
+/* Barra principal */
+.bar {
+  --height: 56px; /* Tamaño intermedio */
+  height: var(--height);
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
   align-items: center;
-  justify-content: space-between;
-  min-height: 72px;
-  gap: 16px;
+  background: var(--lm-surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--lm-border);
 }
 
 /* Marca */
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--lm-text-strong);
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  font-size: 1rem;
+}
+.brand mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+/* Navegación centrada */
+.nav {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+.nav a {
+  color: var(--lm-text-strong);
   text-decoration: none;
+  font-weight: 600;
+  line-height: 1;
+  padding: 7px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: background 0.2s ease;
 }
-.brand img { display: block; }
-html.lm-dark .brand,
-:root:where([style*='--lm-scheme: dark']) .brand { color: var(--color-text); }
-
-/* Navegación principal (no usada aquí, la dejamos por compatibilidad) */
-.nav-links { display: flex; gap: 18px; margin-left: 24px; }
-.nav-links a {
-  color: #6b61b6; padding: 10px 8px; border-radius: 10px; text-decoration: none;
+.nav a:hover {
+  background: #f4f0ff;
 }
-.nav-links a.active, .nav-links a:hover { color: #3a2ee6; background: #f1eeff; }
-html.lm-dark .nav-links a { color: var(--color-text-soft); }
-html.lm-dark .nav-links a.active,
-html.lm-dark .nav-links a:hover { color: white; background: var(--color-surface-2); }
+.nav a.active {
+  background: #ece8ff;
+  color: var(--lm-brand);
+}
 
-/* Acciones (login / registro) */
-.auth-links { display: flex; gap: 10px; align-items: center; }
+/* Acciones lado derecho */
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
 
-/* Responsive */
+/* Texto usuario */
+.user {
+  color: var(--lm-text-soft);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Botones tipo píldora */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px; /* Tamaño intermedio */
+  padding: 0 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  line-height: 34px;
+  font-size: 0.85rem; /* Un poco más grande */
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow: var(--lm-shadow);
+}
+
+/* Variant outlined */
+.pill-outline {
+  border: 1px solid var(--lm-border);
+  color: var(--lm-brand);
+  background: #fff;
+}
+.pill-outline:hover {
+  border-color: var(--lm-brand);
+  background: #f5f2ff;
+}
+
+/* Variant filled */
+.pill-filled {
+  background: var(--lm-brand);
+  color: #fff;
+  border: 1px solid var(--lm-brand);
+}
+.pill-filled:hover {
+  background: var(--lm-brand-600);
+}
+
+/* Ajuste responsive */
+@media (max-width: 1100px) {
+  .nav {
+    gap: 12px;
+  }
+}
 @media (max-width: 900px) {
-  .header-inner { flex-wrap: wrap; gap: 10px 16px; }
-  .nav-links { order: 3; width: 100%; margin: 8px 0 0; }
-  .auth-links { margin-left: auto; }
-}
-
-/* === NUEVO: resaltar enlace activo en mat-button del toolbar === */
-a.mat-mdc-button.active,
-a.mat-mdc-unelevated-button.active,
-a.mat-mdc-raised-button.active {
-  background: #f1eeff !important;
-  color: #3a2ee6 !important;
-  border-radius: 10px;
-}
-html.lm-dark a.mat-mdc-button.active,
-html.lm-dark a.mat-mdc-unelevated-button.active,
-html.lm-dark a.mat-mdc-raised-button.active {
-  background: var(--color-surface-2) !important;
-  color: white !important;
+  .bar {
+    grid-template-columns: auto 1fr;
+    grid-auto-rows: auto;
+    row-gap: 8px;
+  }
+  .nav {
+    order: 3;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .actions {
+    justify-self: end;
+  }
+  .user {
+    display: none;
+  }
 }

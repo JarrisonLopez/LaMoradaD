@@ -5,8 +5,13 @@
     <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
   </div>
 
-  <div class="alert warn" *ngIf="!loading() && error()">{{ error() }}</div>
-  <div class="alert" *ngIf="!loading() && !error() && list().length === 0">No hay episodios publicados.</div>
+  <div class="alert warn" *ngIf="!loading() && error()">
+    {{ error() }}
+  </div>
+
+  <div class="alert" *ngIf="!loading() && !error() && list().length === 0">
+    No hay episodios publicados.
+  </div>
 
   <div class="grid" *ngIf="!loading() && !error() && list().length">
     <mat-card class="ep" *ngFor="let ep of list()">
@@ -15,12 +20,17 @@
         <mat-card-title>{{ ep.title }}</mat-card-title>
         <mat-card-subtitle>{{ ep.category || 'General' }}</mat-card-subtitle>
       </mat-card-header>
+
       <mat-card-content>
         <p class="muted">{{ ep.description }}</p>
-        <audio controls style="width:100%" [src]="ep.fileUrl"></audio>
+
+        <audio controls style="width: 100%" [src]="ep.fileUrl"></audio>
+
         <mat-chip-set>
           <mat-chip disabled>{{ ep.sourceType }}</mat-chip>
-          <mat-chip disabled *ngIf="ep.size != null">{{ (ep.size/1024/1024) | number:'1.0-1' }} MB</mat-chip>
+          <mat-chip disabled *ngIf="ep.size != null">
+            {{ ep.size / 1024 / 1024 | number : '1.0-1' }} MB
+          </mat-chip>
         </mat-chip-set>
       </mat-card-content>
     </mat-card>

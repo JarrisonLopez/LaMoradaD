@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,10 +24,14 @@ export class HeaderComponent {
 
   roleLabel(role?: string): string {
     switch (role) {
-      case 'admin': return 'Admin';
-      case 'psicologo': return 'Psicólogo';
-      case 'usuario': return 'Usuario';
-      default: return '';
+      case 'admin':
+        return 'Administrador';
+      case 'psicologo':
+        return 'Psicólogo';
+      case 'usuario':
+        return 'Usuario';
+      default:
+        return '';
     }
   }
 

@@ -34,6 +34,7 @@ export class RegisterComponent {
   private snack = inject(MatSnackBar);
 
   hide = true;
+  loading = false;
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -41,20 +42,36 @@ export class RegisterComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  get name() {
+    return this.form.get('name');
+  }
+  get email() {
+    return this.form.get('email');
+  }
+  get password() {
+    return this.form.get('password');
+  }
+
   async onSubmit() {
+    if (this.loading) return;
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       this.snack.open('Revisa los datos del formulario', 'Cerrar', { duration: 2500 });
       return;
     }
-    const { name, email, password } = this.form.value;
+
+    const { name, email, password } = this.form.value!;
+    this.loading = true;
 
     try {
-      // Registro real contra el backend (/api/users/register)
+      // Tu firma actual: register({ name, email, password })
       await firstValueFrom(this.auth.register({ name: name!, email: email!, password: password! }));
       this.snack.open('Cuenta creada, ahora inicia sesión', 'Ok', { duration: 2000 });
       this.router.navigateByUrl('/login');
     } catch (e: any) {
       this.snack.open(e?.message || 'No se pudo registrar', 'Cerrar', { duration: 3000 });
+    } finally {
+      this.loading = false;
     }
   }
 }
